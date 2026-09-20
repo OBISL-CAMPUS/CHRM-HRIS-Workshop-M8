@@ -1,0 +1,2583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBISL Enterprise - Human Resource Information System (HRIS)</title>
+    <!-- Tailwind CSS for production-grade SaaS interface design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Support for Inter & Noto Sans Sinhala for high readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for real-time visualization of HR metrics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans Sinhala', sans-serif;
+        }
+        .terminal-glow {
+            box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.05);
+        }
+        .tab-active {
+            background-color: rgb(30, 41, 59);
+            color: #f8fafc;
+            border-left: 4px solid #10b981;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased overflow-x-hidden">
+
+    <script>
+        const translations = {
+            en: {
+                appName: "OBISL Enterprise HRIS",
+                appSubtitle: "OBISL Campus-HRIS Portal • Live Operational Feeds",
+                statusLabel: "PRODUCTION ENVIRONMENT",
+                liveSimActive: "LIVE AUTOMATION ACTIVE",
+                liveSimPaused: "LIVE AUTOMATION PAUSED",
+                footerText: "OBISL Campus-HRIS Production Core v7.4.0 • Connected to Live Database",
+                
+                // Sidebar Navigation
+                dashboard: "Enterprise Dashboard",
+                employees: "Core Registry & Onboarding",
+                leave: "Leave & Attendance Hub",
+                payroll: "Payroll & Statutory Compliance",
+                recruitment: "Recruitment (ATS)",
+                separation: "Separation & Exit Ledger",
+                help: "Self-Paced Training Portal",
+                
+                // Dashboard KPIs
+                activeEmp: "Active Staff Headcount",
+                pendingLeave: "Pending Approvals",
+                monthlyPayroll: "Monthly Gross Liability",
+                openJobs: "Active Job Requisitions",
+                
+                // Dashboard Elements
+                dashTitle: "Enterprise Operational Control Panel",
+                dashDesc: "Live indicators compiling active departmental allocations and salary distribution frameworks.",
+                salaryChartTitle: "Salary Distribution Analysis (LKR)",
+                deptChartTitle: "Departmental Allocation (Headcount)",
+                quickActions: "Instant Administrative Commands",
+                syncBio: "Sync Biometric Cloud",
+                createProfile: "Create Corporate Profile",
+                processPayroll: "Process Central Payroll",
+                
+                // Employee Lifecycle Map
+                lifecycleTitle: "Interactive Employee Lifecycle Mapping",
+                step1Badge: "STEP 1",
+                step1Title: "Applicant Intake (ATS)",
+                step1Desc: "Source candidates, schedule interviews, generate corporate offers, and process automatic hiring ingestion.",
+                step2Badge: "STEP 2",
+                step2Title: "Onboarding Provisioning",
+                step2Desc: "Verify dynamic IT credentials, sign employment agreements, and record basic profiles in the primary directory.",
+                step3Badge: "STEP 3",
+                step3Title: "Active Talent Retention",
+                step3Desc: "Calculate statutory payroll payouts (EPF/ETF), progressive taxes, and track real-time clock-in scans.",
+                step4Badge: "STEP 4",
+                step4Title: "Exit & Separation",
+                step4Desc: "Manage offboarding protocols, record exit interview logs, and calculate legal Sri Lankan Gratuity values.",
+                
+                // Core Registry & Onboarding
+                empDirectory: "Central Corporate Registry",
+                empDirectoryDesc: "Official secure central database profiles mapping organizational resources.",
+                searchPlaceholder: "Search corporate registry...",
+                addEmp: "Register New Employee",
+                tblEmpId: "Emp ID",
+                tblProfile: "Basic Profile",
+                tblDept: "Department",
+                tblStatus: "Status",
+                tblSalary: "Salary",
+                tblTenure: "Service Tenure",
+                tblActions: "Actions",
+                btnEdit: "Edit",
+                onboardingCheck: "Corporate Alignment Checklist",
+                onboardDone: "Done",
+                taskDoc: "Agreement Sign",
+                taskHardware: "Hardware Sent",
+                taskBank: "Bank Account Set",
+                taskSecurity: "Security Complete",
+                
+                // Leave & Attendance
+                leaveTitle: "Leave & Attendance Hub",
+                leaveDesc: "Live operational ledger monitoring employee biometric activity logs and vacation allowances.",
+                bioTitle: "Real-time Biometric Logging (Fingerprint Entry System)",
+                bioConnected: "Live Bio-Feed Connected",
+                tblEmp: "Employee",
+                tblTime: "Detected Timestamp",
+                tblMethod: "Verification Entry Method",
+                tblOverride: "Manual Operational Override",
+                btnClockIn: "Clock In",
+                btnClockOut: "Clock Out",
+                applyLeaveTitle: "Apply Official Leave",
+                lblSelectEmp: "Select Employee Account",
+                lblLeaveType: "Leave Type",
+                lblDays: "Days",
+                lblReason: "Verification Reason",
+                btnCommitLeave: "Commit Leave Entry",
+                workflowTitle: "Absence Routing & Automated Workflow approvals",
+                tblPeriod: "Period",
+                tblReason: "Reason",
+                tblWorkflowStatus: "Workflow Status",
+                tblSystemActions: "System Actions",
+                btnApprove: "Approve",
+                btnReject: "Reject",
+                workflowComplete: "Workflow Complete",
+                
+                // Payroll & Statutory
+                payrollTitle: "Payroll & Statutory Compliance",
+                payrollDesc: "Calculate local Sri Lankan EPF/ETF contributions, APIT taxes, and verify progressive company CTC ratios.",
+                epfCalcTitle: "Sri Lankan EPF/ETF Statutory Calculator",
+                epfCalcDesc: "Operational tool calculating legal statutory allocations under Sri Lankan Labor Law.",
+                lblLoadProfile: "Load Profile",
+                chooseActive: "-- Choose active personnel profile --",
+                lblBasicSalary: "Basic Salary Ledger Line (LKR)",
+                lblApplyApit: "Apply Progressive APIT Tax (Inland Revenue Structure)",
+                lblApitDesc: "Calculate progressive income brackets above LKR 100,000 threshold",
+                btnPushLedger: "Push Contributions to System Ledger",
+                payslipTitle: "OBISL Solutions Private Ltd",
+                payslipSubtitle: "Official Payslip Ledger Output File",
+                payslipCommitted: "TRANSACTION COMMITTED",
+                payEarnings: "Earnings",
+                payDeductions: "Deductions",
+                lblBasic: "Basic Salary",
+                lblEmpEpf: "Employee EPF (8%)",
+                lblApitTax: "APIT Tax Deducted",
+                lblEmployerContrib: "Employer Contributions (Statutory Liability)",
+                lblEmprEpf: "Employer EPF (12%)",
+                lblEmprEtf: "Employer ETF (3%)",
+                netTakeHome: "Net Take-Home Remuneration",
+                totalCost: "Total Company Cost (CTC)",
+                
+                // Recruitment (ATS)
+                recTitle: "ATS Sourcing & Intake Pipeline",
+                recDesc: "Applicant Tracking System (ATS) automating corporate recruiting pipelines.",
+                lblRegisterApp: "Register Applicant",
+                lblFullName: "Full Name",
+                lblJobRole: "Target Job Role",
+                btnIngest: "Process System Ingestion",
+                btnDisqualify: "Disqualify",
+                btnPromote: "Promote",
+                btnHire: "Process Intake & Hire Candidate",
+                
+                // Separation & Exit
+                sepTitle: "Separation Protocols & Gratuity Calculation",
+                sepDesc: "Calculate statutory separation parameters under the Sri Lankan Payment of Gratuity Act No. 12 of 1983.",
+                lblFormalSep: "Trigger Formal Separation",
+                lblSelectActive: "-- Choose active staff profile --",
+                lblSepReason: "Separation Reason",
+                lblPendingLeaves: "Pending Leaves",
+                lblSentiment: "Exit Survey Sentiment Score",
+                lblExitNotes: "Exit Survey Notes",
+                placeholderExitNotes: "Enter exit surveys notes...",
+                btnCommitSep: "Commit Legal Separation File",
+                calcLoaded: "CALCULATION LOADED",
+                sepTitleLedger: "OBISL Separation Ledger (Exit Code 983)",
+                sepSubtitleLedger: "Formal Separation Ledger Calculations",
+                sepProfile: "Employee Profile",
+                sepTenure: "Tenure",
+                sepYears: "Completed Years",
+                sepMonthlyBasic: "Monthly Basic",
+                sepStatStatus: "Statutory Status",
+                sepPendingLeave: "Pending Leave",
+                sepStatBreakdown: "Statutory Breakdown",
+                sepGratPayout: "Statutory Gratuity Payout (Years * Monthly Basic / 2)",
+                sepUnusedLeave: "Unused Leave Encashment",
+                sepBaseSalary: "Base Salary (Current Period)",
+                sepSettleText: "Final Settlement Summary",
+                sepPayStatus: "Payment Status",
+                sepAwaitingSign: "Awaiting Final Settlement Sign-off",
+                sepPromptSelect: "Select an employee from the left panel to calculate legal exit settlements.",
+                
+                // Logs Panel
+                logTitle: "Transaction Ledger & Event Feeds",
+                btnClearLogs: "Clear Terminal Logs",
+                liveFeedTitle: "Live Feed Terminal",
+                
+                // Modal
+                modalTitleEdit: "Modify Operational Personnel Profile",
+                modalTitleRegister: "Register Employee Profile",
+                modalEmpName: "Employee Name",
+                modalEmpRole: "Role / Designation",
+                modalEmpDept: "Department",
+                modalEmpSalary: "Basic Salary (LKR)",
+                modalEmpService: "Service Years",
+                btnCancel: "Cancel",
+                btnSave: "Save Employee",
+                
+                // Educational Content Guide
+                eduGuideTitle: "HRIS Compliance Guide",
+                eduGuideDesc: "Observe operational human capital systems in action. Review live logs to see how data interacts automatically at a corporate tier.",
+                complianceTitle: "Compliance & Labor Law Audit",
+                metaTitle: "OBISL Campus HRIS Core",
+                metaBadge: "Academic Course Level Simulation",
+                metaBody: "Analyze corporate database operations under standard Sri Lankan labor framework directives. Witness payroll processes, interactive biometric terminals, onboarding tracking checklists, and exit calculations.",
+                
+                // Help and Guidance Module
+                helpTitle: "Enterprise HRIS Self-Paced Training Hub",
+                helpDesc: "Track your training competency objectives and study standard operations manually below.",
+                trainingObjective: "Interactive Training Competency Objectives",
+                compStatus: "Competency Level Achieved",
+                task1: "Perform Biometric Sync on Dashboard",
+                task2: "Configure and Edit Core Directory Profile",
+                task3: "Verify Absence Routing & Workflow Approvals",
+                task4: "Calculate Statutory EPF/ETF Payout Splits",
+                task5: "Promote and Process Ingestion Hiring from ATS",
+                task6: "Execute Legal Gratuity Settlement Protocol",
+                helpTabsTitle: "Section-by-Section Operations Manual",
+                helpTabDash: "Dashboard",
+                helpTabRegistry: "Registry",
+                helpTabLeave: "Leave & Attendance",
+                helpTabPayroll: "Payroll Ledger",
+                helpTabATS: "ATS Hiring",
+                helpTabExit: "Exit & Separation",
+                helpTip: "Helpful Tip",
+                completed: "Completed"
+            },
+            si: {
+                appName: "OBISL එන්ටර්ප්‍රයිස් HRIS පද්ධතිය",
+                appSubtitle: "OBISL කැම්පස් HRIS ද්වාරය • සජීවී මෙහෙයුම් දත්ත ධාරාවන්",
+                statusLabel: "ක්‍රියාකාරී නිෂ්පාදන පරිසරය",
+                liveSimActive: "සජීවී යාවත්කාලීන සක්‍රීයයි",
+                liveSimPaused: "සජීවී යාවත්කාලීන අත්හිටුවා ඇත",
+                footerText: "OBISL කැම්පස් HRIS නිෂ්පාදන පද්ධතිය v7.4.0 • සජීවී දත්ත ගොනුව හා සම්බන්ධයි",
+                
+                // Sidebar Navigation
+                dashboard: "ප්‍රධාන පාලන පුවරුව",
+                employees: "මධ්‍යම සේවක ලේඛනය සහ පත්වීම්",
+                leave: "නිවාඩු සහ පැමිණීම් පාලන මධ්‍යස්ථානය",
+                payroll: "වැටුප් සහ ව්‍යවස්ථාපිත අනුකූලතාවය",
+                recruitment: "නව බඳවා ගැනීම් කළමනාකරණය (ATS)",
+                separation: "සේවා අවසාන කිරීම් සහ පාරිතෝෂික",
+                help: "පුහුණු සහ මාර්ගෝපදේශන මධ්‍යස්ථානය",
+                
+                // Dashboard KPIs
+                activeEmp: "ක්‍රියාකාරී සේවක සංඛ්‍යාව",
+                pendingLeave: "අනුමත නොකළ නිවාඩු අයදුම්පත්",
+                monthlyPayroll: "මාසික දළ වැටුප් වගකීම",
+                openJobs: "ක්‍රියාකාරී රැකියා පුරප්පාඩු",
+                
+                // Dashboard Elements
+                dashTitle: "ප්‍රධාන මෙහෙයුම් පාලන පුවරුව",
+                dashDesc: "දෙපාර්තමේන්තු කාර්ය මණ්ඩල ව්‍යාප්තිය සහ වැටුප් ව්‍යුහය නිරූපණය කරන සජීවී දර්ශක.",
+                salaryChartTitle: "වැටුප් ව්‍යාප්ති විශ්ලේෂණය (LKR)",
+                deptChartTitle: "දෙපාර්තමේන්තු සේවක ව්‍යාප්තිය (හිස් ගණන)",
+                quickActions: "ක්ෂණික පරිපාලන විධාන",
+                syncBio: "ජීවමිතික දත්ත සමමුහුර්ත කරන්න",
+                createProfile: "ආයතනික සේවක පැතිකඩක් සාදන්න",
+                processPayroll: "ප්‍රධාන වැටුප් පත්‍රිකා සකසන්න",
+                
+                // Employee Lifecycle Map
+                lifecycleTitle: "සේවක ජීවන චක්‍ර සිතියම්කරණය",
+                step1Badge: "පියවර 1",
+                step1Title: "අයදුම්කරුවන් බඳවා ගැනීම (ATS)",
+                step1Desc: "අයදුම්කරුවන් සොයා ගැනීම, සම්මුඛ පරීක්ෂණ පැවැත්වීම, පත්වීම් ලිපි නිකුත් කිරීම සහ ස්වයංක්‍රීය දත්ත පද්ධතියට ඇතුළත් කිරීම.",
+                step2Badge: "පියවර 2",
+                step2Title: "සේවක සම්බන්ධීකරණ පියවර",
+                step2Desc: "තොරතුරු තාක්ෂණ අක්තපත්‍ර සත්‍යාපනය, ගිවිසුම් අත්සන් කිරීම සහ මූලික පැතිකඩ ප්‍රධාන දත්ත ගබඩාවට ඇතුළත් කිරීම.",
+                step3Badge: "පියවර 3",
+                step3Title: "සක්‍රීය දක්ෂතා රඳවා ගැනීම",
+                step3Desc: "ව්‍යවස්ථාපිත වැටුප් (EPF/ETF), ප්‍රගතිශීලී ආදායම් බදු සහ පැමිණීම් වාර්තා සජීවීව ගණනය කිරීම.",
+                step4Badge: "පියවර 4",
+                step4Title: "සේවයෙන් ඉවත්වීම සහ අවසාන කිරීම",
+                step4Desc: "සේවා අවසන් කිරීම් පාලනය, පිටවීමේ සම්මුඛ පරීක්ෂණ වාර්තා සහ ශ්‍රී ලංකා පාරිතෝෂික නීතිමය ගෙවීම් ගණනය කිරීම.",
+                
+                // Core Registry & Onboarding
+                empDirectory: "මධ්‍යම ආයතනික සේවක ලේඛනාගාරය",
+                empDirectoryDesc: "ආයතනික සම්පත් නිරූපණය කරන නිල සහ ආරක්ෂිත මධ්‍යම දත්ත ගබඩා පැතිකඩ.",
+                searchPlaceholder: "සේවක ලේඛනය සොයන්න...",
+                addEmp: "නව සේවකයෙකු ලියාපදිංචි කරන්න",
+                tblEmpId: "සේවක අංකය",
+                tblProfile: "මූලික පැතිකඩ",
+                tblDept: "දෙපාර්තමේන්තුව",
+                tblStatus: "තත්ත්වය",
+                tblSalary: "වැටුප",
+                tblTenure: "සේවා කාලය",
+                tblActions: "ක්‍රියාමාර්ග",
+                btnEdit: "සංස්කරණය",
+                onboardingCheck: "සේවක සම්බන්ධීකරණ පියවර ලැයිස්තුව",
+                onboardDone: "සම්පූර්ණයි",
+                taskDoc: "ගිවිසුම අත්සන් කිරීම",
+                taskHardware: "උපකරණ නිකුත් කිරීම",
+                taskBank: "බැංකු ගිණුම සකස් කිරීම",
+                taskSecurity: "ආරක්ෂක නිෂ්කාශනය",
+                
+                // Leave & Attendance
+                leaveTitle: "නිවාඩු සහ පැමිණීම් පාලන මධ්‍යස්ථානය",
+                leaveDesc: "සේවකයින්ගේ ජීවමිතික පැමිණීමේ වාර්තා සහ නිවාඩු හිමිකම් නිරීක්ෂණය කරන සජීවී මෙහෙයුම් ලේඛනය.",
+                bioTitle: "තත්කාලීන ජීවමිතික සටහන් කිරීම් (ඇඟිලි සලකුණු පද්ධතිය)",
+                bioConnected: "ජීවමිතික සජීවී සම්බන්ධතාවය සක්‍රීයයි",
+                tblEmp: "සේවකයා",
+                tblTime: "සටහන් වූ වේලාව",
+                tblMethod: "ඇතුළත් කිරීමේ ක්‍රමය",
+                tblOverride: "අතින් සිදුකරන පරිපාලන වෙනස්කම්",
+                btnClockIn: "පැමිණීම සටහන් කරන්න",
+                btnClockOut: "පිටවීම සටහන් කරන්න",
+                applyLeaveTitle: "නිල නිවාඩු අයදුම් කිරීම",
+                lblSelectEmp: "සේවක ගිණුම තෝරන්න",
+                lblLeaveType: "නිවාඩු වර්ගය",
+                lblDays: "දින ගණන",
+                lblReason: "අයදුම් කිරීමට හේතුව",
+                btnCommitLeave: "නිවාඩු වාර්තාව ඇතුළත් කරන්න",
+                workflowTitle: "නිවාඩු අනුමත කිරීම් සහ ස්වයංක්‍රීය පාලන ක්‍රියාවලිය",
+                tblPeriod: "කාලසීමාව",
+                tblReason: "හේතුව",
+                tblWorkflowStatus: "වැඩ ප්‍රවාහ තත්ත්වය",
+                tblSystemActions: "පද්ධති ක්‍රියාමාර්ග",
+                btnApprove: "අනුමත කරන්න",
+                btnReject: "ප්‍රතික්ෂේප කරන්න",
+                workflowComplete: "ක්‍රියාවලිය අවසන්",
+                
+                // Payroll & Statutory
+                payrollTitle: "වැටුප් සහ ව්‍යවස්ථාපිත අනුකූලතාවය",
+                payrollDesc: "ශ්‍රී ලංකාවේ EPF/ETF දායකත්වයන්, APIT ආදායම් බදු සහ ආයතනික සේවායෝජක පිරිවැය (CTC) ගණනය කිරීම.",
+                epfCalcTitle: "ශ්‍රී ලංකා EPF/ETF ව්‍යවස්ථාපිත ගණකය",
+                epfCalcDesc: "ශ්‍රී ලංකා කම්කරු නීතිය යටතේ නීත්‍යානුකූල දායකත්වයන් සහ වගකීම් ගණනය කිරීමේ මෙවලම.",
+                lblLoadProfile: "සේවක පැතිකඩ තෝරන්න",
+                chooseActive: "-- ක්‍රියාකාරී සේවක පැතිකඩක් තෝරන්න --",
+                lblBasicSalary: "මූලික වැටුප (LKR)",
+                lblApplyApit: "ප්‍රගතිශීලී APIT බදු ක්‍රමය අදාළ කරන්න (දේශීය ආදායම් දෙපාර්තමේන්තු ව්‍යුහය)",
+                lblApitDesc: "රුපියල් 100,000 සීමාව ඉක්මවන ආදායම් සඳහා ප්‍රගතිශීලී බදු වරහන් ගණනය කරන්න",
+                btnPushLedger: "වැටුප් වාර්තා පොතට එක් කරන්න",
+                payslipTitle: "OBISL සොලියුෂන්ස් ප්‍රයිවට් ලිමිටඩ්",
+                payslipSubtitle: "නිල වැටුප් පත්‍රිකා වාර්තා ලේඛනය",
+                payslipCommitted: "ගනුදෙනුව සුරකින ලදී",
+                payEarnings: "උපයීම්",
+                payDeductions: "අය කිරීම්",
+                lblBasic: "මූලික වැටුප",
+                lblEmpEpf: "සේවක EPF (8%)",
+                lblApitTax: "අය කළ APIT බදු මුදල",
+                lblEmployerContrib: "සේවායෝජක දායකත්වයන් (ව්‍යවස්ථාපිත වගකීම්)",
+                lblEmprEpf: "සේවායෝජක EPF (12%)",
+                lblEmprEtf: "සේවායෝජක ETF (3%)",
+                netTakeHome: "ශුද්ධ වැටුප (අතට ලැබෙන මුදල)",
+                totalCost: "සමාගමේ මුළු සේවායෝජක පිරිවැය (CTC)",
+                
+                // Recruitment (ATS)
+                recTitle: "ATS මූලාශ්‍ර සහ අයදුම්පත් ප්‍රවාහය",
+                recDesc: "බඳවා ගැනීමේ ක්‍රියාවලීන් ස්වයංක්‍රීය කරන අයදුම්පත් ලුහුබැඳීමේ පද්ධතිය (ATS).",
+                lblRegisterApp: "අයදුම්කරු ලියාපදිංචි කිරීම",
+                lblFullName: "සම්පූර්ණ නම",
+                lblJobRole: "අදාළ තනතුර",
+                btnIngest: "අයදුම්පත පද්ධතියට එක් කරන්න",
+                btnDisqualify: "ප්‍රතික්ෂේප කරන්න",
+                btnPromote: "පෙරට ගන්න",
+                btnHire: "සේවයට බඳවා ගන්න",
+                
+                // Separation & Exit
+                sepTitle: "සේවා අවසන් කිරීම් සහ පාරිතෝෂික ගණනය",
+                sepDesc: "1983 අංක 12 දරන ශ්‍රී ලංකා පාරිතෝෂික ගෙවීමේ පනත යටතේ ව්‍යවස්ථාපිත දීමනා සහ පාරිතෝෂික ගණනය කරන්න.",
+                lblFormalSep: "සේවා අවසන් කිරීමේ ක්‍රියාවලිය",
+                lblSelectActive: "-- සක්‍රීය සේවකයෙකු තෝරන්න --",
+                lblSepReason: "සේවය අවසන් වීමට හේතුව",
+                lblPendingLeaves: "ඉතිරිව ඇති නිවාඩු",
+                lblSentiment: "පිටවීමේ සමීක්ෂණ ප්‍රතිචාරය",
+                lblExitNotes: "පිටවීමේ සමීක්ෂණ සටහන්",
+                placeholderExitNotes: "පිටවීමේ සමීක්ෂණ සටහන් ඇතුළත් කරන්න...",
+                btnCommitSep: "නීතිමය සේවා අවසන් කිරීමේ වාර්තාව සුරකින්න",
+                calcLoaded: "ගණනය කිරීම් සූදානම්",
+                sepTitleLedger: "OBISL සේවා අවසන් කිරීමේ ලේඛනය (කේතය 983)",
+                sepSubtitleLedger: "නිල සේවා අවසන් කිරීමේ ගෙවීම් ගණනය කිරීම්",
+                sepProfile: "සේවක පැතිකඩ",
+                sepTenure: "සේවා කාලය",
+                sepYears: "සම්පූර්ණ කළ වසර ගණන",
+                sepMonthlyBasic: "මාසික මූලික වැටුප",
+                sepStatStatus: "ව්‍යවස්ථාපිත තත්ත්වය",
+                sepPendingLeave: "ඉතිරි නිවාඩු",
+                sepStatBreakdown: "ව්‍යවස්ථාපිත බිඳවැටීම",
+                sepGratPayout: "නීතිමය පාරිතෝෂික ගෙවීම (වසර ගණන * මූලික වැටුපෙන් අඩක්)",
+                sepUnusedLeave: "ඉතිරි නිවාඩු සඳහා ගෙවීම්",
+                sepBaseSalary: "මූලික වැටුප (වත්මන් කාලසීමාව)",
+                sepSettleText: "අවසාන ගෙවීම් එකතුව",
+                sepPayStatus: "ගෙවීම් තත්ත්වය",
+                sepAwaitingSign: "අවසාන අනුමැතිය බලාපොරොත්තුවෙන්",
+                sepPromptSelect: "අවසාන සේවා නියුක්ති ගෙවීම් ගණනය කිරීම සඳහා වම්පස මෙනුවෙන් සේවකයෙකු තෝරන්න.",
+                
+                // Logs Panel
+                logTitle: "ගනුදෙනු ලේඛනය සහ සජීවී දත්ත ධාරාව",
+                btnClearLogs: "ලොග් සටහන් මකා දමන්න",
+                liveFeedTitle: "සජීවී පද්ධති දත්ත ධාරාව",
+                
+                // Modal
+                modalTitleEdit: "සේවක පැතිකඩ තොරතුරු වෙනස් කරන්න",
+                modalTitleRegister: "නව සේවකයෙකු පද්ධතියට ලියාපදිංචි කරන්න",
+                modalEmpName: "සේවකයාගේ නම",
+                modalEmpRole: "තනතුර / වගකීම",
+                modalEmpDept: "දෙපාර්තමේන්තුව",
+                modalEmpSalary: "මූලික වැටුප (LKR)",
+                modalEmpService: "සේවා කාලය (වසර)",
+                btnCancel: "අවලංගු කරන්න",
+                btnSave: "සේවකයා සුරකින්න",
+                
+                // Educational Content Guide
+                eduGuideTitle: "HRIS අනුකූලතා සහ නීතිමය මාර්ගෝපදේශය",
+                eduGuideDesc: "සැබෑ ව්‍යාපාරික මට්ටමේ මානව සම්පත් පද්ධති ක්‍රියාත්මක වන ආකාරය නිරීක්ෂණය කරන්න. දත්ත ස්වයංක්‍රීයව වෙනස් වන ආකාරය සජීවී පද්ධති දත්ත ධාරාවෙන් පරීක්ෂා කරන්න.",
+                complianceTitle: "අනුකූලතා සහ කම්කරු නීති විගණනය",
+                metaTitle: "OBISL කැම්පස් HRIS පද්ධතිය",
+                metaBadge: "ශාස්ත්‍රීය මට්ටමේ මෙහෙයුම් අනුකරණය",
+                metaBody: "ශ්‍රී ලංකා කම්කරු නීති රාමුවට අනුකූලව සැබෑ ආයතනික මානව සම්පත් පද්ධතියක් ක්‍රියාත්මක වන ආකාරය අධ්‍යයනය කරන්න. වැටුප් පත්‍රිකා, ඇඟිලි සලකුණු යන්ත්‍ර දත්ත, සේවක සම්බන්ධීකරණ පියවර සහ පාරිතෝෂික ගණනය කිරීම් මෙහිදී නිරීක්ෂණය කළ හැකිය.",
+                
+                // Help and Guidance Module
+                helpTitle: "HRIS ස්වයං-වේගී පුහුණු ද්වාරය",
+                helpDesc: "ඔබගේ පුහුණු වෘත්තීය නිපුණතා ප්‍රගතිය නිරීක්ෂණය කරන්න සහ පහත දැක්වෙන මෙහෙයුම් අත්පොත් අධ්‍යයනය කරන්න.",
+                trainingObjective: "අන්තර්ක්‍රියාකාරී පුහුණු වෘත්තීය නිපුණතා ඉලක්ක",
+                compStatus: "ළඟා කර ගත් නිපුණතා මට්ටම",
+                task1: "පාලන පුවරුවේ ජීවමිතික දත්ත සමමුහුර්ත කිරීම",
+                task2: "ප්‍රධාන සේවක ලේඛන පැතිකඩක් සකස් කිරීම",
+                task3: "නිවාඩු අයදුම්පත් වැඩ ප්‍රවාහය ක්‍රියාත්මක කිරීම",
+                task4: "ව්‍යවස්ථාපිත EPF/ETF දායකත්වයන් ගණනය කිරීම",
+                task5: "ATS පද්ධතියෙන් සේවකයෙකු බඳවා ගැනීම",
+                task6: "නීත්‍යානුකූල පාරිතෝෂික ගෙවීම් ගණනය කිරීම",
+                helpTabsTitle: "කොටසින් කොටස මෙහෙයුම් මාර්ගෝපදේශය",
+                helpTabDash: "පාලන පුවරුව",
+                helpTabRegistry: "සේවක ලේඛනය",
+                helpTabLeave: "නිවාඩු සහ පැමිණීම්",
+                helpTabPayroll: "වැටුප් පත්‍රිකා",
+                helpTabATS: "බඳවා ගැනීම් (ATS)",
+                helpTabExit: "සේවා අවසන් කිරීම්",
+                helpTip: "ප්‍රයෝජනවත් ඉඟියක්",
+                completed: "සම්පූර්ණයි"
+            }
+        };
+
+        let currentLang = 'en';
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+    </script>
+
+    <script>
+        let state = {
+            employees: [
+                { id: "EMP-001", name: "Anura Wijesinghe", role: "Principal Software Architect", dept: "Engineering", status: "Active", salary: 285000, hireDate: "2020-03-12", yearsOfService: 6, onboardProgress: 100, remainingLeaves: 12, performance: "Exceeds Expectations", onboardTasks: { docSigned: true, laptopIssued: true, bankSet: true, compliancePassed: true } },
+                { id: "EMP-002", name: "Sanduni Perera", role: "HR Lead Specialist", dept: "Human Resources", status: "Active", salary: 145000, hireDate: "2021-01-15", yearsOfService: 5, onboardProgress: 100, remainingLeaves: 8, performance: "Meets Expectations", onboardTasks: { docSigned: true, laptopIssued: true, bankSet: true, compliancePassed: true } },
+                { id: "EMP-003", name: "Kavinda Bandara", role: "Senior SRE Infrastructure", dept: "Operations", status: "Active", salary: 220000, hireDate: "2023-11-01", yearsOfService: 3, onboardProgress: 100, remainingLeaves: 14, performance: "Outstanding", onboardTasks: { docSigned: true, laptopIssued: true, bankSet: true, compliancePassed: true } },
+                { id: "EMP-004", name: "Dilani Fernando", role: "Lead UI/UX Architect", dept: "Creative", status: "On Leave", salary: 195000, hireDate: "2022-05-10", yearsOfService: 4, onboardProgress: 100, remainingLeaves: 10, performance: "Outstanding", onboardTasks: { docSigned: true, laptopIssued: true, bankSet: true, compliancePassed: true } },
+                { id: "EMP-005", name: "Mohamed Rizan", role: "Senior QA Automation", dept: "Engineering", status: "Active", salary: 165000, hireDate: "2025-05-02", yearsOfService: 1, onboardProgress: 75, remainingLeaves: 15, performance: "Needs Improvement", onboardTasks: { docSigned: true, laptopIssued: true, bankSet: true, compliancePassed: false } }
+            ],
+            leaves: [
+                { id: "LV-102", empId: "EMP-004", empName: "Dilani Fernando", type: "Annual", start: "2026-06-25", end: "2026-06-29", reason: "Annual Medical Leave Block", status: "Approved" },
+                { id: "LV-103", empId: "EMP-002", empName: "Sanduni Perera", type: "Casual", start: "2026-07-02", end: "2026-07-03", reason: "Statutory Family Matters", status: "Pending" }
+            ],
+            jobs: [
+                { id: "JOB-401", title: "Associate Software Engineer", dept: "Engineering", type: "Full Time", applicants: 18, status: "Active" },
+                { id: "JOB-402", title: "Talent Acquisition Lead", dept: "Human Resources", type: "Full Time", applicants: 8, status: "Active" }
+            ],
+            candidates: [
+                { id: "CAN-001", name: "Kamal Gunawardena", role: "Associate Software Engineer", stage: "Screening", email: "kamal.g@obisl.com" },
+                { id: "CAN-002", name: "Nisansala De Silva", role: "Associate Software Engineer", stage: "Interview", email: "nisansala@obisl.com" },
+                { id: "CAN-003", name: "Roshan Perera", role: "Talent Acquisition Lead", stage: "Offered", email: "roshan.p@obisl.com" }
+            ],
+            logs: [
+                { time: "15:20:00", text: "Enterprise Kernel Initiated: Active production data pipeline successfully loaded.", type: "system" },
+                { time: "15:20:05", text: "Legal structures matched. Verified compliance checks for Sri Lankan Inland Revenue Act.", type: "payroll" }
+            ],
+            attendance: [
+                { empId: "EMP-001", name: "Anura Wijesinghe", time: "08:15 AM", status: "In", method: "Fingerprint Scanner Terminal 01" },
+                { empId: "EMP-003", name: "Kavinda Bandara", time: "08:30 AM", status: "In", method: "Fingerprint Scanner Terminal 02" }
+            ],
+            trainingCompetency: {
+                dashboardSync: false,
+                coreDir: false,
+                absenceRouting: false,
+                epfSettle: false,
+                atsHire: false,
+                gratuityCalc: false
+            },
+            isLiveActive: true
+        };
+
+        const performanceColors = {
+            "Outstanding": "bg-emerald-100 text-emerald-800",
+            "Exceeds Expectations": "bg-blue-100 text-blue-800",
+            "Meets Expectations": "bg-slate-100 text-slate-800",
+            "Needs Improvement": "bg-amber-100 text-amber-800"
+        };
+    </script>
+
+    <header class="bg-indigo-950 text-white shadow-md border-b border-indigo-950 px-4 py-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-3 relative z-30">
+        <div class="flex items-center gap-3">
+            <div class="bg-emerald-500 text-indigo-950 p-2 rounded-lg font-extrabold text-xl shadow-inner tracking-tight">
+                OBISL
+            </div>
+            <div>
+                <h1 class="font-extrabold text-lg sm:text-xl tracking-tight flex items-center gap-2">
+                    <span id="headerAppName">OBISL Enterprise HRIS</span> 
+                    <span id="headerStatusLabel" class="text-[10px] sm:text-xs bg-emerald-400 text-indigo-950 px-2.5 py-0.5 rounded-full uppercase font-bold tracking-wider">Production Environment</span>
+                </h1>
+                <p id="headerAppSubtitle" class="text-xs text-indigo-200">OBISL Campus-HRIS Portal • Live Operational Feeds</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 flex-wrap justify-center">
+            <button onclick="toggleLiveFeed()" id="liveFeedBtn" class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition">
+                <span id="livePulse" class="h-2 w-2 bg-emerald-400 rounded-full animate-ping inline-block"></span>
+                <span id="liveBtnText">LIVE AUTOMATION ACTIVE</span>
+            </button>
+
+            <div class="flex bg-indigo-900 p-1 rounded-lg border border-indigo-800 shadow-inner">
+                <button onclick="changeLanguage('en')" id="langBtnEn" class="px-2.5 py-1 text-xs font-semibold rounded transition-all duration-200 bg-indigo-600 text-white">
+                    English
+                </button>
+                <button onclick="changeLanguage('si')" id="langBtnSi" class="px-2.5 py-1 text-xs font-semibold rounded transition-all duration-200 text-indigo-300 hover:text-white">
+                    සිංහල
+                </button>
+            </div>
+            
+            <div class="text-xs text-indigo-200 hidden md:block border-l border-indigo-850 pl-3">
+                <span id="liveClock" class="font-mono">Sunday, 15:20:34 PM</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex flex-col lg:flex-row">
+        <aside class="w-full lg:w-64 bg-slate-900 text-slate-300 flex flex-row lg:flex-col border-r border-slate-950 overflow-x-auto lg:overflow-x-visible">
+            <div class="p-4 hidden lg:block border-b border-slate-800/80">
+                <p class="text-[10px] text-slate-500 uppercase tracking-wider font-extrabold">Enterprise Core Systems</p>
+            </div>
+            <nav id="navContainer" class="flex flex-row lg:flex-col w-full p-2 lg:p-3 gap-1 lg:gap-2">
+                <!-- Dynamic navigation nodes load here -->
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-6 relative">
+            
+            <!-- Secure Container for Non-Obtrusive Overlay Logs (Positioned bottom-right) -->
+            <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+            <!-- Operational KPI Indicators Card Layout -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow transition duration-200 flex items-center justify-between">
+                    <div>
+                        <span id="statActiveEmpLabel" class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase block tracking-wider">Active Staff Headcount</span>
+                        <span id="statActiveEmpCount" class="text-xl sm:text-2xl font-black text-indigo-950 mt-1 block">5</span>
+                    </div>
+                    <div class="bg-indigo-50 text-indigo-600 p-2.5 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow transition duration-200 flex items-center justify-between">
+                    <div>
+                        <span id="statPendingLeaveLabel" class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase block tracking-wider">Pending Approvals</span>
+                        <span id="statPendingLeaveCount" class="text-xl sm:text-2xl font-black text-indigo-950 mt-1 block">1</span>
+                    </div>
+                    <div class="bg-amber-50 text-amber-600 p-2.5 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow transition duration-200 flex items-center justify-between">
+                    <div>
+                        <span id="statMonthlyPayrollLabel" class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase block tracking-wider">Monthly Gross Liability</span>
+                        <span id="statMonthlyPayrollCount" class="text-xl sm:text-2xl font-black text-emerald-700 mt-1 block">LKR 1,010,000</span>
+                    </div>
+                    <div class="bg-emerald-50 text-emerald-600 p-2.5 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow transition duration-200 flex items-center justify-between">
+                    <div>
+                        <span id="statOpenJobsLabel" class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase block tracking-wider">Active Job Requisitions</span>
+                        <span id="statOpenJobsCount" class="text-xl sm:text-2xl font-black text-indigo-950 mt-1 block">2</span>
+                    </div>
+                    <div class="bg-blue-50 text-blue-600 p-2.5 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Mapping Flowchart of the Employee Lifecycle -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <h3 id="lifecycleTitle" class="text-xs font-extrabold text-indigo-950 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    🔄 Interactive Employee Lifecycle Mapping
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                    <div class="p-3.5 bg-indigo-50 border border-indigo-200 rounded-xl relative">
+                        <span id="step1Badge" class="absolute -top-2 left-4 bg-indigo-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full">STEP 1</span>
+                        <div id="step1Title" class="font-bold text-xs text-indigo-950 mt-1">Applicant Intake (ATS)</div>
+                        <div id="step1Desc" class="text-[10px] text-slate-500 mt-1 leading-relaxed">Source candidates, schedule interviews, generate corporate offers, and process automatic hiring ingestion.</div>
+                    </div>
+                    <div class="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl relative">
+                        <span id="step2Badge" class="absolute -top-2 left-4 bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full">STEP 2</span>
+                        <div id="step2Title" class="font-bold text-xs text-emerald-950 mt-1">Onboarding Provisioning</div>
+                        <div id="step2Desc" class="text-[10px] text-slate-500 mt-1 leading-relaxed">Verify dynamic IT credentials, sign employment agreements, and record basic profiles in the primary directory.</div>
+                    </div>
+                    <div class="p-3.5 bg-blue-50 border border-blue-200 rounded-xl relative">
+                        <span id="step3Badge" class="absolute -top-2 left-4 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full">STEP 3</span>
+                        <div id="step3Title" class="font-bold text-xs text-blue-950 mt-1">Active Talent Retention</div>
+                        <div id="step3Desc" class="text-[10px] text-slate-500 mt-1 leading-relaxed">Calculate statutory payroll payouts (EPF/ETF), progressive taxes, and track real-time clock-in scans.</div>
+                    </div>
+                    <div class="p-3.5 bg-rose-50 border border-rose-200 rounded-xl relative">
+                        <span id="step4Badge" class="absolute -top-2 left-4 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full">STEP 4</span>
+                        <div id="step4Title" class="font-bold text-xs text-rose-950 mt-1">Exit & Separation</div>
+                        <div id="step4Desc" class="text-[10px] text-slate-500 mt-1 leading-relaxed">Manage offboarding protocols, record exit interview logs, and calculate legal Sri Lankan Gratuity values.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workspace Hub Structure -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                
+                <!-- Dynamic Content Module Space -->
+                <div class="xl:col-span-2 space-y-6">
+                    <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm min-h-[480px]" id="moduleWindow">
+                        <!-- Navigation hooks modify this workspace on user action -->
+                    </div>
+
+                    <!-- Real-time Event Terminal (Represents live physical scanners and db triggers) -->
+                    <div class="bg-slate-950 rounded-2xl border border-slate-800 p-5 text-slate-300 font-mono text-xs shadow-lg relative overflow-hidden">
+                        <div id="liveFeedTitle" class="absolute right-0 top-0 text-[9px] bg-indigo-500/20 text-indigo-400 px-3 py-1 font-bold rounded-bl-lg tracking-widest uppercase flex items-center gap-1.5">
+                            <span class="h-1.5 w-1.5 bg-indigo-400 rounded-full animate-ping"></span>
+                            Live Feed Terminal
+                        </div>
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+                            <span id="logTitle" class="text-indigo-400 font-bold tracking-wide flex items-center gap-2">
+                                <span class="h-2.5 w-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                Transaction Ledger & Event Feeds
+                            </span>
+                            <button id="btnClearLogs" onclick="clearLogs()" class="text-slate-500 hover:text-slate-300 uppercase text-[10px] font-bold border border-slate-800 px-2 py-0.5 rounded transition">
+                                Clear Terminal Logs
+                            </button>
+                        </div>
+                        <div id="simTerminal" class="space-y-1.5 max-h-36 overflow-y-auto">
+                            <!-- Populated on user actions or auto update events -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-indigo-950 text-white rounded-2xl border border-indigo-900 p-5 sm:p-6 shadow-xl relative overflow-hidden">
+                        <div class="absolute right-0 top-0 opacity-5 translate-x-4 -translate-y-4">
+                            <svg class="w-40 h-40 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.082a1 1 0 00-.596.892V12a1 1 0 00.71.964l11 3A1 1 0 0020 15V11a1 1 0 00-.293-.707l-2-A1 1 0 0017 8h-3V5a1 1 0 00-.394-.803l-4-3zM3.219 9.742L5.1 10.55a1 1 0 00.788 0l2.36-1.011a1 1 0 011.5 1.17c-.013.047-.027.093-.042.139L8.358 14.86a1 1 0 01-.767.767l-2.4 1.2a1 1 0 01-1.391-1.391l1.411-2.822a1 1 0 00-.12-.12l-1.872-1.872a1 1 0 010-1.414z"></path></svg>
+                        </div>
+                        
+                        <h3 id="sandboxPanelTitle" class="font-extrabold text-lg mb-1 flex items-center gap-2">
+                            HRIS Compliance Guide
+                        </h3>
+                        <p id="sandboxPanelDesc" class="text-xs text-indigo-300 mb-4 leading-relaxed">
+                            Observe operational human capital systems in action. Review live logs to see how data interacts automatically at a corporate tier.
+                        </p>
+
+                        <!-- Dynamic Contextual Topic Explainer -->
+                        <div id="eduTopicExplainer" class="bg-indigo-900/60 p-4 rounded-xl border border-indigo-800 mb-5 space-y-2">
+                            <!-- Injected dynamically based on active Workspace tab -->
+                        </div>
+
+                        <!-- Self-Guided Interactive Compliance Audit Quiz -->
+                        <div class="border-t border-indigo-900/80 pt-5">
+                            <h4 id="quizTitle" class="font-bold text-sm text-amber-400 mb-3 flex items-center gap-2">
+                                Compliance & Labor Law Audit
+                            </h4>
+                            <div class="bg-indigo-900/40 p-4 rounded-xl border border-indigo-800 text-xs space-y-3">
+                                <p id="quizQuestion" class="font-semibold leading-relaxed">Which EPF contribution percentages are legally deducted from an employee's salary and contributed by an employer in Sri Lanka?</p>
+                                <div class="space-y-2" id="quizAnswersContainer">
+                                    <!-- Populated dynamically -->
+                                </div>
+                                <div id="quizFeedback" class="hidden font-semibold mt-3 p-2.5 rounded text-xs transition duration-150"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meta Information Box -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg shadow-inner">
+                                🎓
+                            </div>
+                            <div>
+                                <h4 id="metaTitle" class="font-bold text-sm text-indigo-950">OBISL Campus HRIS Core</h4>
+                                <p id="metaBadge" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Academic Course Level Simulation</p>
+                            </div>
+                        </div>
+                        <p id="metaOverviewText" class="text-xs text-slate-600 leading-relaxed">
+                            Analyze corporate database operations under standard Sri Lankan labor framework directives. Witness payroll processes, interactive biometric terminals, onboarding tracking checklists, and exit calculations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Dynamic Overlay Dialogue Window to Edit / Create Registry Profiles -->
+    <div id="modalBackdrop" class="hidden fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden transform transition-all">
+            <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 id="modalTitle" class="font-bold text-lg">Modify Employee Profile</h3>
+                <button onclick="closeEmployeeModal()" class="text-slate-300 hover:text-white font-bold text-2xl transition">&times;</button>
+            </div>
+            <form id="employeeForm" onsubmit="saveEmployee(event)" class="p-6 space-y-4">
+                <input type="hidden" id="modalEmpId">
+                <div>
+                    <label id="lblEmpName" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee Name</label>
+                    <input type="text" id="modalEmpNameInput" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label id="lblEmpRole" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Role / Designation</label>
+                        <input type="text" id="modalEmpRoleInput" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150">
+                    </div>
+                    <div>
+                        <label id="lblEmpDept" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Department</label>
+                        <select id="modalEmpDeptSelect" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                            <option value="Engineering">Engineering</option>
+                            <option value="Human Resources">Human Resources</option>
+                            <option value="Operations">Operations</option>
+                            <option value="Creative">Creative</option>
+                            <option value="Finance">Finance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="col-span-2">
+                        <label id="lblEmpSalary" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Basic Salary (LKR)</label>
+                        <input type="number" id="modalEmpSalaryInput" required min="35000" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label id="lblEmpService" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Service Years</label>
+                        <input type="number" id="modalEmpYearsInput" required min="0" value="1" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeEmployeeModal()" id="btnModalClose" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition duration-150">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnModalSave" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition duration-150">
+                        Save Employee
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- System Footer Info -->
+    <footer id="systemFooter" class="bg-slate-100 text-center py-4 border-t border-slate-200 text-xs text-slate-500 font-semibold">
+        OBISL Campus-HRIS Production Core v7.4.0 • Connected to Live Database
+    </footer>
+
+    <script>
+        let activeTab = 'dashboard';
+        let departmentChart = null;
+        let salaryChart = null;
+        let activeHelpSection = 'dash';
+
+        function addLog(text, type = "system") {
+            const time = new Date().toLocaleTimeString();
+            state.logs.unshift({ time, text, type });
+            if (state.logs.length > 50) state.logs.pop();
+            renderTerminal();
+        }
+
+        function clearLogs() {
+            state.logs = [];
+            renderTerminal();
+            showToast(currentLang === 'en' ? "System database log cleared" : "පද්ධති දත්ත සටහන් මකා දමන ලදී", "info");
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toastContainer');
+            const id = 'toast_' + Math.random().toString(36).substr(2, 9);
+            
+            let bg = "bg-emerald-600 text-white border-emerald-500";
+            let icon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            if (type === "error") {
+                bg = "bg-rose-600 text-white border-rose-500";
+                icon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+            } else if (type === "info") {
+                bg = "bg-indigo-600 text-white border-indigo-500";
+                icon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            }
+
+            const el = document.createElement('div');
+            el.id = id;
+            el.className = `${bg} border flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl transition-all duration-300 transform translate-y-12 opacity-0 text-xs font-semibold select-none pointer-events-auto`;
+            el.innerHTML = `
+                <div>${icon}</div>
+                <div class="flex-1">${message}</div>
+                <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white font-bold">&times;</button>
+            `;
+            
+            container.appendChild(el);
+            setTimeout(() => {
+                el.classList.remove('translate-y-12', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                el.classList.add('translate-y-12', 'opacity-0');
+                setTimeout(() => el.remove(), 300);
+            }, 4000);
+        }
+
+        function toggleLiveFeed() {
+            state.isLiveActive = !state.isLiveActive;
+            const btn = document.getElementById('liveFeedBtn');
+            const pulse = document.getElementById('livePulse');
+            const text = document.getElementById('liveBtnText');
+            
+            if (state.isLiveActive) {
+                btn.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition";
+                pulse.className = "h-2 w-2 bg-emerald-400 rounded-full animate-ping inline-block";
+                text.textContent = t('liveSimActive');
+                addLog("SYSTEM ENGINE: Resumed background biometric and operations feed sequence.", "system");
+                showToast(currentLang === 'en' ? "Live update simulation resumed" : "සජීවී දත්ත යාවත්කාලීන කිරීම් නැවත ආරම්භ කරන ලදී");
+            } else {
+                btn.className = "flex items-center gap-1.5 px-3 py-1.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-lg text-xs font-bold transition";
+                pulse.className = "h-2 w-2 bg-rose-400 rounded-full inline-block";
+                text.textContent = t('liveSimPaused');
+                addLog("SYSTEM ENGINE: Paused live update sequence. Manual control override only.", "system");
+                showToast(currentLang === 'en' ? "Live updates paused" : "සජීවී දත්ත යාවත්කාලීන කිරීම් අත්හිටුවන ලදී", "info");
+            }
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const buttons = {
+                en: document.getElementById('langBtnEn'),
+                si: document.getElementById('langBtnSi')
+            };
+
+            if (lang === 'en') {
+                buttons.en.className = "px-2.5 py-1 text-xs font-semibold rounded transition-all duration-200 bg-indigo-600 text-white";
+                buttons.si.className = "px-2.5 py-1 text-xs font-semibold rounded transition-all duration-200 text-indigo-300 hover:text-white";
+            } else {
+                buttons.si.className = "px-2.5 py-1 text-xs font-semibold rounded transition-all duration-200 bg-indigo-600 text-white";
+                buttons.en.className = "px-2.5 py-1 text-xs font-semibold rounded transition-all duration-200 text-indigo-300 hover:text-white";
+            }
+
+            addLog(`UI Localization Interface swapped to [${lang === 'en' ? 'English' : 'සිංහල'}]`, "system");
+            updateStaticLabels();
+            renderNavigation();
+            renderActiveTab();
+            renderEducationalConsole();
+        }
+
+        function updateStaticLabels() {
+            document.getElementById('headerAppName').textContent = t('appName');
+            document.getElementById('headerStatusLabel').textContent = t('statusLabel');
+            document.getElementById('headerAppSubtitle').textContent = t('appSubtitle');
+            document.getElementById('sandboxPanelTitle').textContent = t('eduGuideTitle');
+            document.getElementById('sandboxPanelDesc').textContent = t('eduGuideDesc');
+            document.getElementById('quizTitle').textContent = t('complianceTitle');
+            document.getElementById('lifecycleTitle').textContent = `🔄 ` + t('lifecycleTitle');
+            document.getElementById('liveBtnText').textContent = state.isLiveActive ? t('liveSimActive') : t('liveSimPaused');
+            document.getElementById('systemFooter').textContent = t('footerText');
+            
+            // Employee Lifecycle Steps full translations
+            document.getElementById('step1Badge').textContent = t('step1Badge');
+            document.getElementById('step1Title').textContent = t('step1Title');
+            document.getElementById('step1Desc').textContent = t('step1Desc');
+
+            document.getElementById('step2Badge').textContent = t('step2Badge');
+            document.getElementById('step2Title').textContent = t('step2Title');
+            document.getElementById('step2Desc').textContent = t('step2Desc');
+
+            document.getElementById('step3Badge').textContent = t('step3Badge');
+            document.getElementById('step3Title').textContent = t('step3Title');
+            document.getElementById('step3Desc').textContent = t('step3Desc');
+
+            document.getElementById('step4Badge').textContent = t('step4Badge');
+            document.getElementById('step4Title').textContent = t('step4Title');
+            document.getElementById('step4Desc').textContent = t('step4Desc');
+
+            // Metadata card translations
+            document.getElementById('metaTitle').textContent = t('metaTitle');
+            document.getElementById('metaBadge').textContent = t('metaBadge');
+            document.getElementById('metaOverviewText').textContent = t('metaBody');
+
+            // Stat Widgets
+            document.getElementById('statActiveEmpLabel').textContent = t('activeEmp');
+            document.getElementById('statPendingLeaveLabel').textContent = t('pendingLeave');
+            document.getElementById('statMonthlyPayrollLabel').textContent = t('monthlyPayroll');
+            document.getElementById('statOpenJobsLabel').textContent = t('openJobs');
+        }
+
+        const modules = [
+            { id: 'dashboard', labelKey: 'dashboard', icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"></path></svg>` },
+            { id: 'employees', labelKey: 'employees', icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>` },
+            { id: 'leave', labelKey: 'leave', icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>` },
+            { id: 'payroll', labelKey: 'payroll', icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>` },
+            { id: 'recruitment', labelKey: 'recruitment', icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>` },
+            { id: 'separation', labelKey: 'separation', icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zm-11 13a6 6 0 0111.73 0H2zm11-13a4 4 0 10-8 0 4 4 0 008 0zm-7 13a6 6 0 0012 0v-1a2 2 0 00-2-2h-2m-4-3H9"></path></svg>` },
+            { id: 'help', labelKey: 'help', icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4 1.253"></path></svg>` }
+        ];
+
+        function renderNavigation() {
+            const container = document.getElementById('navContainer');
+            container.innerHTML = modules.map(mod => `
+                <button onclick="switchTab('${mod.id}')" class="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 text-xs font-bold rounded-xl whitespace-nowrap transition duration-150 ${activeTab === mod.id ? 'tab-active bg-slate-800 text-white border-l-4 border-emerald-500' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'}">
+                    ${mod.icon}
+                    <span>${t(mod.labelKey)}</span>
+                </button>
+            `).join('');
+        }
+
+        function switchTab(tabId) {
+            activeTab = tabId;
+            addLog(`Module Context Swapped -> System Routing to: [${tabId}]`, "system");
+            renderNavigation();
+            renderActiveTab();
+            renderEducationalConsole();
+        }
+    </script>
+
+    <script>
+        function updateDashboardStats() {
+            const active = state.employees.filter(e => e.status === 'Active' || e.status === 'On Leave').length;
+            const pending = state.leaves.filter(l => l.status === 'Pending').length;
+            const openJobs = state.jobs.filter(j => j.status === 'Active').length;
+            
+            let payrollSum = 0;
+            state.employees.forEach(e => {
+                if (e.status === 'Active' || e.status === 'On Leave') {
+                    payrollSum += Number(e.salary);
+                }
+            });
+
+            document.getElementById('statActiveEmpCount').textContent = active;
+            document.getElementById('statPendingLeaveCount').textContent = pending;
+            document.getElementById('statMonthlyPayrollCount').textContent = `LKR ${payrollSum.toLocaleString()}`;
+            document.getElementById('statOpenJobsCount').textContent = openJobs;
+        }
+
+        function renderActiveTab() {
+            const space = document.getElementById('moduleWindow');
+            updateDashboardStats();
+
+            if (activeTab === 'dashboard') {
+                renderDashboard(space);
+            } else if (activeTab === 'employees') {
+                renderEmployees(space);
+            } else if (activeTab === 'leave') {
+                renderLeave(space);
+            } else if (activeTab === 'payroll') {
+                renderPayroll(space);
+            } else if (activeTab === 'recruitment') {
+                renderRecruitment(space);
+            } else if (activeTab === 'separation') {
+                renderSeparation(space);
+            } else if (activeTab === 'help') {
+                renderHelpPortal(space);
+            }
+        }
+
+        function renderDashboard(space) {
+            space.innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-extrabold text-indigo-950 flex items-center gap-2">
+                                📊 ${t('dashTitle')}
+                            </h2>
+                            <p class="text-xs text-slate-500">${t('dashDesc')}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <h3 class="text-xs font-bold text-slate-600 uppercase mb-3 tracking-wider">${t('salaryChartTitle')}</h3>
+                            <div class="h-48 flex justify-center items-center">
+                                <canvas id="salaryChartCanvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <h3 class="text-xs font-bold text-slate-600 uppercase mb-3 tracking-wider">${t('deptChartTitle')}</h3>
+                            <div class="h-48 flex justify-center items-center">
+                                <canvas id="departmentChartCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50/60 border border-indigo-100 p-5 rounded-2xl space-y-4">
+                        <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
+                            ⚡ ${t('quickActions')}
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <button onclick="simulateClockInAll()" class="p-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm transition">
+                                🕒 ${t('syncBio')}
+                            </button>
+                            <button onclick="openEmployeeModal()" class="p-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow shadow-indigo-200 transition">
+                                👤 ${t('createProfile')}
+                            </button>
+                            <button onclick="simulateMonthlyBatchPayroll()" class="p-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow shadow-emerald-200 transition">
+                                💵 ${t('processPayroll')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            initDashboardCharts();
+        }
+
+        function initDashboardCharts() {
+            const ctxSal = document.getElementById('salaryChartCanvas').getContext('2d');
+            const ctxDept = document.getElementById('departmentChartCanvas').getContext('2d');
+
+            const depts = {};
+            const empNames = [];
+            const empSalaries = [];
+
+            state.employees.forEach(e => {
+                if (e.status !== 'Separated') {
+                    depts[e.dept] = (depts[e.dept] || 0) + 1;
+                    empNames.push(e.name.split(' ')[0]);
+                    empSalaries.push(e.salary);
+                }
+            });
+
+            if (salaryChart) salaryChart.destroy();
+            if (departmentChart) departmentChart.destroy();
+
+            salaryChart = new Chart(ctxSal, {
+                type: 'bar',
+                data: {
+                    labels: empNames,
+                    datasets: [{
+                        label: currentLang === 'en' ? 'Basic Salary (LKR)' : 'මූලික වැටුප (LKR)',
+                        data: empSalaries,
+                        backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                        borderColor: 'rgb(79, 70, 229)',
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            departmentChart = new Chart(ctxDept, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(depts),
+                    datasets: [{
+                        data: Object.values(depts),
+                        backgroundColor: [
+                            '#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#3b82f6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+                }
+            });
+        }
+
+        function simulateClockInAll() {
+            state.employees.forEach(e => {
+                if (e.status === 'Active') {
+                    const isAlreadyIn = state.attendance.some(att => att.empId === e.id);
+                    if (!isAlreadyIn) {
+                        state.attendance.push({
+                            empId: e.id,
+                            name: e.name,
+                            time: "08:00 AM",
+                            status: "In",
+                            method: "Bulk Synced Cloud Server"
+                        });
+                    }
+                }
+            });
+            state.trainingCompetency.dashboardSync = true;
+            addLog("BIOMETRIC SERVER: Bulk synchronization requested. Updated fingerprint registry.", "system");
+            showToast(currentLang === 'en' ? "Simulated biometric data sync completed" : "ජීවමිතික දත්ත සමමුහුර්ත කිරීම සාර්ථකයි");
+            renderActiveTab();
+        }
+
+        function simulateMonthlyBatchPayroll() {
+            let logMsg = "PAYROLL BANK ENGINE: Automated processing sequence initialized...\n";
+            let totalDisbursed = 0;
+            state.employees.forEach(e => {
+                if (e.status !== 'Separated') {
+                    const epf8 = e.salary * 0.08;
+                    const epf12 = e.salary * 0.12;
+                    const etf3 = e.salary * 0.03;
+                    const ctc = e.salary + epf12 + etf3;
+                    totalDisbursed += ctc;
+                    logMsg += ` -> TxID: [${e.id}] Disbursed ${e.name} | Net Take-Home LKR ${(e.salary - epf8).toLocaleString()} | CTC: LKR ${ctc.toLocaleString()}\n`;
+                }
+            });
+            addLog(logMsg, "payroll");
+            showToast(currentLang === 'en' ? `Payroll processed. Gross: LKR ${totalDisbursed.toLocaleString()}` : `වැටුප් පත්‍රිකා සැකසීම නිමයි. මුළු වටිනාකම: LKR ${totalDisbursed.toLocaleString()}`, "info");
+        }
+    </script>
+
+    <script>
+        function renderEmployees(space) {
+            const tableRows = state.employees.map(e => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50/50 transition">
+                    <td class="py-3 px-4 text-xs font-bold text-slate-500">${e.id}</td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-indigo-950 text-xs sm:text-sm">${e.name}</div>
+                        <div class="text-[10px] text-indigo-600 uppercase tracking-widest font-bold">${e.role}</div>
+                    </td>
+                    <td class="py-3 px-4 text-xs font-semibold text-slate-700">${e.dept}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 rounded-full text-[10px] font-extrabold uppercase ${e.status === 'Active' ? 'bg-emerald-100 text-emerald-800' : e.status === 'On Leave' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800'}">
+                            ${e.status}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-xs font-mono font-bold text-slate-900">LKR ${Number(e.salary).toLocaleString()}</td>
+                    <td class="py-3 px-4 text-xs font-semibold text-slate-600">${e.yearsOfService} ${currentLang === 'en' ? 'Years' : 'වසර'}</td>
+                    <td class="py-3 px-4 flex items-center gap-2">
+                        <button onclick="editEmployeeInline('${e.id}')" class="text-indigo-600 hover:text-indigo-950 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
+                            ${t('btnEdit')}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            space.innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b border-slate-100 pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <h2 class="text-xl font-extrabold text-indigo-950 flex items-center gap-2">
+                                👥 ${t('empDirectory')}
+                            </h2>
+                            <p class="text-xs text-slate-500">${t('empDirectoryDesc')}</p>
+                        </div>
+                        <button onclick="openEmployeeModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 flex items-center gap-2 transition duration-150">
+                            ➕ ${t('addEmp')}
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <input type="text" id="employeeSearch" onkeyup="searchEmployees(this)" placeholder="${t('searchPlaceholder')}" class="w-full sm:w-80 px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full border-collapse bg-white text-left text-xs min-w-[700px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                                    <th class="py-3 px-4">${t('tblEmpId')}</th>
+                                    <th class="py-3 px-4">${t('tblProfile')}</th>
+                                    <th class="py-3 px-4">${t('tblDept')}</th>
+                                    <th class="py-3 px-4">${t('tblStatus')}</th>
+                                    <th class="py-3 px-4">${t('tblSalary')}</th>
+                                    <th class="py-3 px-4">${t('tblTenure')}</th>
+                                    <th class="py-3 px-4">${t('tblActions')}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeeTableBody">
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Onboarding Flow Steps Checklist -->
+                    <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-4">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider">${t('onboardingCheck')}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${state.employees.map(emp => `
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <span class="font-bold text-xs text-indigo-950 block">${emp.name}</span>
+                                            <span class="text-[9px] text-slate-400 uppercase tracking-widest font-semibold">${emp.role}</span>
+                                        </div>
+                                        <span class="text-xs font-mono font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">${emp.onboardProgress}% ${t('onboardDone')}</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-[10px]">
+                                        <label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded">
+                                            <input type="checkbox" onchange="toggleOnboardTask('${emp.id}', 'docSigned')" ${emp.onboardTasks?.docSigned ? 'checked' : ''} class="rounded text-indigo-600">
+                                            <span>${t('taskDoc')}</span>
+                                        </label>
+                                        <label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded">
+                                            <input type="checkbox" onchange="toggleOnboardTask('${emp.id}', 'laptopIssued')" ${emp.onboardTasks?.laptopIssued ? 'checked' : ''} class="rounded text-indigo-600">
+                                            <span>${t('taskHardware')}</span>
+                                        </label>
+                                        <label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded">
+                                            <input type="checkbox" onchange="toggleOnboardTask('${emp.id}', 'bankSet')" ${emp.onboardTasks?.bankSet ? 'checked' : ''} class="rounded text-indigo-600">
+                                            <span>${t('taskBank')}</span>
+                                        </label>
+                                        <label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded">
+                                            <input type="checkbox" onchange="toggleOnboardTask('${emp.id}', 'compliancePassed')" ${emp.onboardTasks?.compliancePassed ? 'checked' : ''} class="rounded text-indigo-600">
+                                            <span>${t('taskSecurity')}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleOnboardTask(empId, taskName) {
+            const emp = state.employees.find(e => e.id === empId);
+            if (emp) {
+                if (!emp.onboardTasks) emp.onboardTasks = { docSigned: false, laptopIssued: false, bankSet: false, compliancePassed: false };
+                emp.onboardTasks[taskName] = !emp.onboardTasks[taskName];
+                
+                let checkedCount = 0;
+                Object.keys(emp.onboardTasks).forEach(k => {
+                    if (emp.onboardTasks[k]) checkedCount++;
+                });
+                emp.onboardProgress = (checkedCount / 4) * 100;
+                
+                state.trainingCompetency.coreDir = true;
+                addLog(`ONBOARDING PIPELINE: Updated operational step [${taskName}] status for ${emp.name} to ${emp.onboardTasks[taskName]}. Total progress: ${emp.onboardProgress}%`, "system");
+                showToast(currentLang === 'en' ? `Updated onboarding step for ${emp.name}` : `${emp.name}ගේ සම්බන්ධීකරණ පියවර යාවත්කාලීන කෙරුණි`);
+                renderActiveTab();
+            }
+        }
+
+        function searchEmployees(input) {
+            const query = input.value.toLowerCase();
+            const rows = document.querySelectorAll('#employeeTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function editEmployeeInline(empId) {
+            const emp = state.employees.find(e => e.id === empId);
+            if (!emp) return;
+
+            document.getElementById('modalEmpId').value = emp.id;
+            document.getElementById('modalEmpNameInput').value = emp.name;
+            document.getElementById('modalEmpRoleInput').value = emp.role;
+            document.getElementById('modalEmpDeptSelect').value = emp.dept;
+            document.getElementById('modalEmpSalaryInput').value = emp.salary;
+            document.getElementById('modalEmpYearsInput').value = emp.yearsOfService || 1;
+
+            document.getElementById('modalTitle').textContent = t('modalTitleEdit');
+            document.getElementById('modalBackdrop').classList.remove('hidden');
+        }
+
+        function openEmployeeModal() {
+            document.getElementById('modalEmpId').value = "";
+            document.getElementById('employeeForm').reset();
+            document.getElementById('modalTitle').textContent = t('modalTitleRegister');
+            document.getElementById('modalBackdrop').classList.remove('hidden');
+        }
+
+        function closeEmployeeModal() {
+            document.getElementById('modalBackdrop').classList.add('hidden');
+        }
+
+        function saveEmployee(e) {
+            e.preventDefault();
+            const id = document.getElementById('modalEmpId').value;
+            const name = document.getElementById('modalEmpNameInput').value;
+            const role = document.getElementById('modalEmpRoleInput').value;
+            const dept = document.getElementById('modalEmpDeptSelect').value;
+            const salary = Number(document.getElementById('modalEmpSalaryInput').value);
+            const years = Number(document.getElementById('modalEmpYearsInput').value);
+
+            if (id) {
+                const emp = state.employees.find(x => x.id === id);
+                emp.name = name;
+                emp.role = role;
+                emp.dept = dept;
+                emp.salary = salary;
+                emp.yearsOfService = years;
+                addLog(`DB UPDATE: Transformed record parameters for employee registry account [${id}] -> ${name}`, "system");
+                showToast(currentLang === 'en' ? "Employee record committed successfully" : "සේවක දත්ත සාර්ථකව සුරක්ෂිත කරන ලදී");
+            } else {
+                const newId = `EMP-0${state.employees.length + 1}`;
+                state.employees.push({
+                    id: newId,
+                    name,
+                    role,
+                    dept,
+                    status: "Active",
+                    salary,
+                    yearsOfService: years,
+                    remainingLeaves: 14,
+                    onboardProgress: 25,
+                    onboardTasks: { docSigned: true, laptopIssued: false, bankSet: false, compliancePassed: false },
+                    hireDate: new Date().toISOString().split('T')[0]
+                });
+                state.trainingCompetency.coreDir = true;
+                addLog(`DB WRITE: Inserted new master directory file for [${newId}] - ${name}`, "system");
+                showToast(currentLang === 'en' ? "Successfully initialized profile onboarding registry" : "සේවක පැතිකඩ සාර්ථකව පද්ධතියට එක් කරන ලදී");
+            }
+            closeEmployeeModal();
+            renderActiveTab();
+        }
+    </script>
+
+    <script>
+        function renderLeave(space) {
+            const leaveRows = state.leaves.map(l => `
+                <tr class="border-b border-slate-100">
+                    <td class="py-3 px-4 font-semibold text-slate-500">${l.id}</td>
+                    <td class="py-3 px-4 font-bold text-indigo-950">${l.empName}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 rounded bg-indigo-50 text-indigo-800 text-[10px] font-extrabold uppercase">
+                            ${l.type}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-slate-600">${l.start} to ${l.end}</td>
+                    <td class="py-3 px-4 text-slate-500">${l.reason}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 rounded-full text-[10px] font-extrabold uppercase ${l.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' : l.status === 'Rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">
+                            ${l.status}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 flex gap-2">
+                        ${l.status === 'Pending' ? `
+                            <button onclick="actionLeave('${l.id}', 'Approved')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold transition">${t('btnApprove')}</button>
+                            <button onclick="actionLeave('${l.id}', 'Rejected')" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs font-bold transition">${t('btnReject')}</button>
+                        ` : `<span class="text-slate-400 text-[11px]">${t('workflowComplete')}</span>`}
+                    </td>
+                </tr>
+            `).join('');
+
+            const attendanceRows = state.employees.map(emp => {
+                const attRecord = state.attendance.find(a => a.empId === emp.id);
+                return `
+                    <tr class="border-b border-slate-100">
+                        <td class="py-3 px-4 font-bold text-indigo-950">${emp.name}</td>
+                        <td class="py-3 px-4 text-slate-500">${emp.dept}</td>
+                        <td class="py-3 px-4 font-mono font-semibold text-slate-700">${attRecord ? attRecord.time : 'N/A'}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${attRecord ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-400'}">
+                                ${attRecord ? (currentLang === 'en' ? 'CLOCKED IN' : 'පැමිණ ඇත') : (currentLang === 'en' ? 'OUT' : 'පිටව ඇත')}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-[11px] text-slate-500 font-medium">
+                            ${attRecord ? attRecord.method : (currentLang === 'en' ? 'No active trace' : 'සටහන් වී නැත')}
+                        </td>
+                        <td class="py-3 px-4">
+                            <button onclick="toggleAttendanceInline('${emp.id}')" class="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold rounded-lg text-xs transition">
+                                ${attRecord ? t('btnClockOut') : t('btnClockIn')}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            space.innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h2 class="text-xl font-extrabold text-indigo-950 flex items-center gap-2">
+                            📅 ${t('leaveTitle')}
+                        </h2>
+                        <p class="text-xs text-slate-500">${t('leaveDesc')}</p>
+                    </div>
+
+                    <!-- Attendance Board -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
+                                ⏱️ ${t('bioTitle')}
+                            </h3>
+                            <span class="text-[10px] text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
+                                <span class="h-2 w-2 bg-emerald-500 rounded-full animate-ping"></span> ${t('bioConnected')}
+                            </span>
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border border-slate-100">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 text-[10px] text-slate-500 font-extrabold uppercase tracking-wider">
+                                    <tr>
+                                        <th class="py-3 px-4">${t('tblEmp')}</th>
+                                        <th class="py-3 px-4">${t('tblDept')}</th>
+                                        <th class="py-3 px-4">${t('tblTime')}</th>
+                                        <th class="py-3 px-4">${t('tblStatus')}</th>
+                                        <th class="py-3 px-4">${t('tblMethod')}</th>
+                                        <th class="py-3 px-4">${t('tblOverride')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${attendanceRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Leave Flows Layout -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4 h-fit">
+                            <h3 class="text-xs font-bold text-slate-600 uppercase tracking-widest">${t('applyLeaveTitle')}</h3>
+                            <form onsubmit="submitActiveLeave(event)" class="space-y-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblSelectEmp')}</label>
+                                    <select id="leaveEmpSelect" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                        ${state.employees.map(e => `<option value="${e.id}">${e.name} (${e.role})</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblLeaveType')}</label>
+                                        <select id="leaveTypeSelect" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                            <option value="Annual">Annual</option>
+                                            <option value="Casual">Casual</option>
+                                            <option value="Medical">Medical</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblDays')}</label>
+                                        <input type="number" id="leaveDaysInput" value="1" min="1" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblReason')}</label>
+                                    <input type="text" id="leaveReasonInput" required placeholder="Reason for leave" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none">
+                                </div>
+                                <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs shadow-sm transition">
+                                    ${t('btnCommitLeave')}
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Workflow Routing Screen -->
+                        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="text-xs font-bold text-slate-600 uppercase tracking-widest">${t('workflowTitle')}</h3>
+                            <div class="overflow-x-auto rounded-xl border border-slate-100">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-50 text-[10px] text-slate-500 font-extrabold uppercase tracking-wider">
+                                        <tr>
+                                            <th class="py-3 px-4">ID</th>
+                                            <th class="py-3 px-4">${t('tblEmp')}</th>
+                                            <th class="py-3 px-4">${t('lblLeaveType')}</th>
+                                            <th class="py-3 px-4">${t('tblPeriod')}</th>
+                                            <th class="py-3 px-4">${t('tblReason')}</th>
+                                            <th class="py-3 px-4">${t('tblWorkflowStatus')}</th>
+                                            <th class="py-3 px-4">${t('tblSystemActions')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${leaveRows}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleAttendanceInline(empId) {
+            const index = state.attendance.findIndex(a => a.empId === empId);
+            const emp = state.employees.find(e => e.id === empId);
+            if (!emp) return;
+
+            if (index > -1) {
+                state.attendance.splice(index, 1);
+                addLog(`BIOMETRIC HARDWARE: Registered Touch-Exit protocol. Employee ID [${empId}] ${emp.name} verified clock-out.`, "system");
+                showToast(currentLang === 'en' ? `${emp.name} clocked out` : `${emp.name} පිටවීම සටහන් කරන ලදී`);
+            } else {
+                state.attendance.push({
+                    empId,
+                    name: emp.name,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    status: "In",
+                    method: "Fingerprint Scanner Override"
+                });
+                addLog(`BIOMETRIC HARDWARE: Registered Touch-Entry protocol. Employee ID [${empId}] ${emp.name} verified clock-in.`, "system");
+                showToast(currentLang === 'en' ? `${emp.name} clocked in` : `${emp.name} පැමිණීම සටහන් කරන ලදී`);
+            }
+            renderActiveTab();
+        }
+
+        function submitActiveLeave(event) {
+            event.preventDefault();
+            const empId = document.getElementById('leaveEmpSelect').value;
+            const emp = state.employees.find(e => e.id === empId);
+            const type = document.getElementById('leaveTypeSelect').value;
+            const days = document.getElementById('leaveDaysInput').value;
+            const reason = document.getElementById('leaveReasonInput').value;
+
+            const newLeave = {
+                id: `LV-${100 + state.leaves.length + 1}`,
+                empId,
+                empName: emp.name,
+                type,
+                start: new Date().toISOString().split('T')[0],
+                end: `+${days} days`,
+                reason,
+                status: "Pending"
+            };
+
+            state.leaves.push(newLeave);
+            addLog(`ABSENCE WORKFLOW ENGINE: Dispatched leave registration workflow for ${emp.name} (ID: ${empId}). Awaiting validation.`, "system");
+            showToast(currentLang === 'en' ? "Leave request routed to validation engine" : "නිවාඩු අයදුම්පත අනුමැතිය සඳහා යොමු කරන ලදී");
+            renderActiveTab();
+        }
+
+        function actionLeave(leaveId, newStatus) {
+            const leave = state.leaves.find(l => l.id === leaveId);
+            if (leave) {
+                leave.status = newStatus;
+                const emp = state.employees.find(e => e.id === leave.empId);
+                if (emp && newStatus === 'Approved') {
+                    emp.status = "On Leave";
+                    emp.remainingLeaves = Math.max(0, emp.remainingLeaves - 2);
+                } else if (emp && newStatus === 'Rejected') {
+                    emp.status = "Active";
+                }
+
+                state.trainingCompetency.absenceRouting = true;
+                addLog(`ABSENCE WORKFLOW ENGINE: Workflow transaction ${leaveId} resolved to state [${newStatus}]`, "system");
+                showToast(currentLang === 'en' ? `Leave status updated to ${newStatus}` : `නිවාඩු අයදුම්පත් තත්ත්වය [${newStatus}] ලෙස යාවත්කාලීන විය`);
+                renderActiveTab();
+            }
+        }
+    </script>
+
+    <script>
+        function renderPayroll(space) {
+            space.innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h2 class="text-xl font-extrabold text-indigo-950 flex items-center gap-2">
+                            💸 ${t('payrollTitle')}
+                        </h2>
+                        <p class="text-xs text-slate-500">${t('payrollDesc')}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <!-- Configuration Card -->
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                            <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
+                                🇱🇰 ${t('epfCalcTitle')}
+                            </h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">${t('epfCalcDesc')}</p>
+                            
+                            <div class="space-y-3 pt-2">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblLoadProfile')}</label>
+                                    <select id="payrollEmpSelect" onchange="loadPayrollEmpData(this)" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                        <option value="">${t('chooseActive')}</option>
+                                        ${state.employees.map(e => `<option value="${e.id}">${e.name} (LKR ${e.salary.toLocaleString()})</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblBasicSalary')}</label>
+                                    <input type="number" id="payrollBasicInput" oninput="calculateStatutorySplits()" value="150000" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblApplyApit')}</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="payeTaxCheckbox" onchange="calculateStatutorySplits()" checked class="rounded text-indigo-600 focus:ring-indigo-500">
+                                        <span class="text-xs text-slate-600">${t('lblApitDesc')}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="commitPayrollRecord()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow shadow-indigo-100 transition">
+                                ${t('btnPushLedger')}
+                            </button>
+                        </div>
+
+                        <!-- Pay Slip Generator -->
+                        <div id="payslipContainer" class="bg-white p-5 rounded-2xl border border-indigo-100 shadow-xl space-y-4">
+                            <!-- Injected dynamically on calculation changes -->
+                        </div>
+
+                    </div>
+                </div>
+            `;
+            calculateStatutorySplits();
+        }
+
+        function loadPayrollEmpData(select) {
+            const empId = select.value;
+            if (!empId) return;
+            const emp = state.employees.find(e => e.id === empId);
+            if (emp) {
+                document.getElementById('payrollBasicInput').value = emp.salary;
+                addLog("PAYROLL SUBSYSTEM: Loaded structural data parameters for employee profile.", "payroll");
+                calculateStatutorySplits();
+            }
+        }
+
+        function calculateStatutorySplits() {
+            const basic = Number(document.getElementById('payrollBasicInput').value) || 0;
+            const applyTax = document.getElementById('payeTaxCheckbox').checked;
+
+            const empEPF = basic * 0.08;
+            const emprEPF = basic * 0.12;
+            const emprETF = basic * 0.03;
+
+            // Sri Lankan Progressive APIT Taxes formula:
+            let tax = 0;
+            if (applyTax && basic > 100000) {
+                const taxableIncome = basic - 100000;
+                if (taxableIncome <= 41667) {
+                    tax = taxableIncome * 0.06;
+                } else if (taxableIncome <= 83334) {
+                    tax = (41667 * 0.06) + ((taxableIncome - 41667) * 0.12);
+                } else {
+                    tax = (41667 * 0.06) + (41667 * 0.12) + ((taxableIncome - 83334) * 0.18);
+                }
+            }
+
+            const netSalary = basic - empEPF - tax;
+            const companyCTC = basic + emprEPF + emprETF;
+
+            const container = document.getElementById('payslipContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div class="border-b border-indigo-950/20 pb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xs font-black text-indigo-900 tracking-wider uppercase">${t('payslipTitle')}</h4>
+                                <p class="text-[9px] text-slate-400">${t('payslipSubtitle')}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="bg-indigo-950 text-emerald-400 px-2 py-0.5 rounded text-[8px] font-mono uppercase font-bold tracking-widest">${t('payslipCommitted')}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 py-2 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <span class="block text-[9px] text-slate-400 uppercase font-bold">${t('payEarnings')}</span>
+                                <div class="flex justify-between border-b border-slate-100 py-1.5 font-semibold">
+                                    <span>${t('lblBasic')}</span>
+                                    <span class="font-mono">LKR ${basic.toLocaleString()}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="block text-[9px] text-slate-400 uppercase font-bold">${t('payDeductions')}</span>
+                                <div class="flex justify-between border-b border-slate-100 py-1.5 text-rose-700 font-semibold">
+                                    <span>${t('lblEmpEpf')}</span>
+                                    <span class="font-mono">- LKR ${empEPF.toLocaleString()}</span>
+                                </div>
+                                <div class="flex justify-between border-b border-slate-100 py-1.5 text-rose-700 font-semibold">
+                                    <span>${t('lblApitTax')}</span>
+                                    <span class="font-mono">- LKR ${tax.toLocaleString([], {maximumFractionDigits:0})}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2">
+                            <span class="block text-[9px] text-slate-400 uppercase font-bold">${t('lblEmployerContrib')}</span>
+                            <div class="flex justify-between text-[11px] text-slate-600 border-b border-slate-200 pb-1">
+                                <span>${t('lblEmprEpf')}</span>
+                                <span class="font-mono">LKR ${emprEPF.toLocaleString()}</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-600">
+                                <span>${t('lblEmprEtf')}</span>
+                                <span class="font-mono">LKR ${emprETF.toLocaleString()}</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex justify-between items-center text-sm font-bold text-indigo-950 border-t border-dashed border-slate-200">
+                            <div>
+                                <span class="block text-[9px] text-emerald-600 uppercase font-black tracking-wider">${t('netTakeHome')}</span>
+                                <span class="text-xl text-emerald-600 font-extrabold font-mono">LKR ${netSalary.toLocaleString([], {maximumFractionDigits:0})}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[9px] text-slate-400 uppercase font-semibold">${t('totalCost')}</span>
+                                <span class="text-xs text-slate-700 font-bold font-mono">LKR ${companyCTC.toLocaleString([], {maximumFractionDigits:0})}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function commitPayrollRecord() {
+            const basic = Number(document.getElementById('payrollBasicInput').value) || 0;
+            const empEPF = basic * 0.08;
+            const emprEPF = basic * 0.12;
+            const emprETF = basic * 0.03;
+            state.trainingCompetency.epfSettle = true;
+            addLog(`PAYROLL LEDGER AUDIT: Committed ledger balance LKR ${basic.toLocaleString()} | Member EPF LKR ${empEPF.toLocaleString()} | Employer EPF LKR ${emprEPF.toLocaleString()} | ETF LKR ${emprETF.toLocaleString()}`, "payroll");
+            showToast(currentLang === 'en' ? "Payroll statutory records committed" : "වැටුප් ව්‍යවස්ථාපිත දත්ත සාර්ථකව එක් කරන ලදී");
+        }
+    </script>
+
+    <script>
+        function renderRecruitment(space) {
+            const stages = ["Screening", "Interview", "Offered"];
+            
+            const stageColumns = stages.map(stg => {
+                const list = state.candidates.filter(c => c.stage === stg);
+                return `
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                            <span class="text-xs font-black text-indigo-950 uppercase tracking-widest">${stg}</span>
+                            <span class="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2 py-0.5 rounded-full">${list.length}</span>
+                        </div>
+                        <div class="space-y-2 min-h-[220px]">
+                            ${list.map(c => `
+                                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2 hover:border-indigo-400 transition">
+                                    <div class="font-bold text-xs text-slate-800">${c.name}</div>
+                                    <div class="text-[10px] text-indigo-600 font-semibold">${c.role}</div>
+                                    <div class="text-[9px] text-slate-400 font-mono">${c.email}</div>
+                                    <div class="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                                        <div class="flex justify-between items-center">
+                                            <button onclick="terminateCandidate('${c.id}')" class="text-[9px] font-bold text-rose-500 hover:underline">${t('btnDisqualify')}</button>
+                                            ${stg !== 'Offered' ? `
+                                                <button onclick="promoteCandidate('${c.id}')" class="text-[9px] font-extrabold text-indigo-600 hover:underline flex items-center gap-1">
+                                                    ${t('btnPromote')} &rarr;
+                                                </button>
+                                            ` : `
+                                                <span class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider">Offered</span>
+                                            `}
+                                        </div>
+                                        ${stg === 'Offered' ? `
+                                            <button onclick="convertOfferedToEmployee('${c.id}')" class="w-full text-center py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold mt-1 shadow-sm transition">
+                                                ✅ ${t('btnHire')}
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            space.innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b border-slate-100 pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <h2 class="text-xl font-extrabold text-indigo-950 flex items-center gap-2">
+                                🎯 ${t('recTitle')}
+                            </h2>
+                            <p class="text-xs text-slate-500">${t('recDesc')}</p>
+                        </div>
+                    </div>
+
+                    <!-- Add candidate interface -->
+                    <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-600 uppercase mb-3 tracking-widest">${t('lblRegisterApp')}</h3>
+                        <form onsubmit="addCandidate(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                            <input type="text" id="candidateNameInput" required placeholder="${t('lblFullName')}" class="px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none">
+                            <input type="email" id="candidateEmailInput" required placeholder="name@obisl.com" class="px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none">
+                            <select id="candidateJobSelect" class="px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none">
+                                <option value="Associate Software Engineer">Associate Software Engineer</option>
+                                <option value="Talent Acquisition Lead">Talent Acquisition Lead</option>
+                            </select>
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-2 rounded-lg shadow-sm transition">
+                                ${t('btnIngest')}
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Kanban Board -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${stageColumns}
+                    </div>
+                </div>
+            `;
+        }
+
+        function promoteCandidate(candId) {
+            const cand = state.candidates.find(c => c.id === candId);
+            if (cand) {
+                let nextStage = "";
+                if (cand.stage === "Screening") nextStage = "Interview";
+                else if (cand.stage === "Interview") nextStage = "Offered";
+                
+                cand.stage = nextStage;
+                addLog(`ATS SYSTEM: Promoted candidate file [${candId}] ${cand.name} to state validation: [${nextStage}]`, "system");
+                showToast(currentLang === 'en' ? `Promoted ${cand.name} to ${nextStage}` : `${cand.name}ව ${nextStage} පියවරට යොමු කෙරුණි`);
+                renderActiveTab();
+            }
+        }
+
+        function convertOfferedToEmployee(candId) {
+            const cand = state.candidates.find(c => c.id === candId);
+            if (cand) {
+                openEmployeeModal();
+                document.getElementById('modalEmpNameInput').value = cand.name;
+                document.getElementById('modalEmpRoleInput').value = cand.role;
+                document.getElementById('modalEmpSalaryInput').value = 95000;
+                document.getElementById('modalEmpYearsInput').value = 0;
+
+                state.candidates = state.candidates.filter(c => c.id !== candId);
+                state.trainingCompetency.atsHire = true;
+                addLog(`ATS-HR COUPLING: Converted Candidate [${cand.id}] ${cand.name} into Core HR Registry. Starting onboarding checklists.`, "system");
+                showToast(currentLang === 'en' ? `Hired ${cand.name}! Check Core Registry & Onboarding.` : `${cand.name} බඳවා ගන්නා ලදී!`);
+            }
+        }
+
+        function terminateCandidate(candId) {
+            const index = state.candidates.findIndex(c => c.id === candId);
+            if (index > -1) {
+                const cand = state.candidates[index];
+                state.candidates.splice(index, 1);
+                addLog(`ATS SYSTEM: Archived and disqualified candidate file [${candId}] ${cand.name}`, "system");
+                showToast(currentLang === 'en' ? `${cand.name} removed from ATS pipeline` : `${cand.name} බඳවා ගැනීමේ පද්ධතියෙන් ඉවත් කරන ලදී`, "error");
+                renderActiveTab();
+            }
+        }
+
+        function addCandidate(e) {
+            e.preventDefault();
+            const name = document.getElementById('candidateNameInput').value;
+            const email = document.getElementById('candidateEmailInput').value;
+            const role = document.getElementById('candidateJobSelect').value;
+
+            const newCand = {
+                id: `CAN-00${state.candidates.length + 1}`,
+                name,
+                role,
+                stage: "Screening",
+                email
+            };
+
+            state.candidates.push(newCand);
+            addLog(`ATS INGESTION: Parsed application details from career boards for ${name}. Ingested into database.`, "system");
+            showToast(currentLang === 'en' ? `${name} processed into screening pipeline` : `${name} අයදුම්කරු සාර්ථකව පද්ධතියට එක් විය`);
+            renderActiveTab();
+        }
+    </script>
+
+    <script>
+        function renderSeparation(space) {
+            const activeEmployees = state.employees.filter(e => e.status !== 'Separated');
+
+            space.innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h2 class="text-xl font-extrabold text-indigo-950 flex items-center gap-2">
+                            🤝 ${t('sepTitle')}
+                        </h2>
+                        <p class="text-xs text-slate-500">${t('sepDesc')}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <!-- Configuration Form -->
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4 h-fit">
+                            <h3 class="text-xs font-black text-slate-600 uppercase tracking-widest">${t('lblFormalSep')}</h3>
+                            
+                            <form onsubmit="executeSeparationWorkflow(event)" class="space-y-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblSelectEmp')}</label>
+                                    <select id="sepEmpSelect" onchange="loadSepEmpData(this)" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-500">
+                                        <option value="">${t('lblSelectActive')}</option>
+                                        ${activeEmployees.map(e => `<option value="${e.id}">${e.name} (${e.yearsOfService} Yrs, LKR ${e.salary.toLocaleString()})</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblSepReason')}</label>
+                                        <select id="sepReasonSelect" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-1">
+                                            <option value="Resignation">Resignation</option>
+                                            <option value="Retirement">Retirement</option>
+                                            <option value="Redundancy">Redundancy</option>
+                                            <option value="Mutual Consent">Mutual Consent</option>
+                                            <option value="Termination">Involuntary Termination</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblPendingLeaves')}</label>
+                                        <input type="number" id="sepLeavesInput" readonly class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-slate-100">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblSentiment')}</label>
+                                    <select id="sepSentimentSelect" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs">
+                                        <option value="Extremely Satisfied">Extremely Satisfied</option>
+                                        <option value="Neutral / Professional">Neutral / Professional</option>
+                                        <option value="Highly Dissatisfied">Highly Dissatisfied</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">${t('lblExitNotes')}</label>
+                                    <textarea id="sepNotesInput" placeholder="${t('placeholderExitNotes')}" class="w-full p-2 rounded-lg border border-slate-200 text-xs h-16"></textarea>
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs shadow-sm transition">
+                                    ${t('btnCommitSep')}
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Exit Calculations -->
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="bg-white p-5 rounded-2xl border border-indigo-100 shadow-xl space-y-4" id="sepResultContainer">
+                                <div class="text-center py-10 text-slate-400 text-xs">
+                                    ${t('sepPromptSelect')}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadSepEmpData(select) {
+            const empId = select.value;
+            if (!empId) return;
+            const emp = state.employees.find(e => e.id === empId);
+            if (emp) {
+                document.getElementById('sepLeavesInput').value = emp.remainingLeaves || 10;
+                calculateGratuitySettle(emp);
+            }
+        }
+
+        function calculateGratuitySettle(emp) {
+            const basic = emp.salary;
+            const years = emp.yearsOfService;
+            const leaves = emp.remainingLeaves || 10;
+
+            let gratuityVal = 0;
+            let gratuityStatus = currentLang === 'en' ? "Non-eligible (Under 5 years)" : "සුදුසුකම් නොලබයි (වසර 5ට අඩු)";
+            if (years >= 5) {
+                gratuityVal = (basic / 2) * years;
+                gratuityStatus = currentLang === 'en' ? "Statutory Gratuity Qualified (5+ Years)" : "ව්‍යවස්ථාපිත පාරිතෝෂික සඳහා සුදුසුකම් ලබයි (වසර 5+)";
+            }
+
+            const dailyRate = basic / 30;
+            const leavesEncashVal = dailyRate * leaves;
+            const finalSettle = basic + gratuityVal + leavesEncashVal;
+
+            const cont = document.getElementById('sepResultContainer');
+            if (cont) {
+                cont.innerHTML = `
+                    <div class="border-b border-rose-950/20 pb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xs font-black text-rose-900 tracking-wider uppercase">${t('sepTitleLedger')}</h4>
+                                <p class="text-[9px] text-slate-400">${t('sepSubtitleLedger')}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="bg-rose-950 text-rose-400 px-2 py-0.5 rounded text-[8px] font-mono uppercase font-bold tracking-widest">${t('calcLoaded')}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 py-2 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <span class="block text-[9px] text-slate-400 uppercase font-bold">${t('sepProfile')}</span>
+                                <div class="text-xs font-black text-indigo-950">${emp.name}</div>
+                                <div class="text-[10px] text-slate-500">${t('sepTenure')}: <span class="font-bold">${years} ${t('sepYears')}</span></div>
+                                <div class="text-[10px] text-slate-500">${t('sepMonthlyBasic')}: <span class="font-bold">LKR ${basic.toLocaleString()}</span></div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <span class="block text-[9px] text-slate-400 uppercase font-bold">${t('sepStatStatus')}</span>
+                                <div class="text-xs font-black text-rose-800">${gratuityStatus}</div>
+                                <div class="text-[10px] text-slate-500">${t('sepPendingLeave')}: <span class="font-bold">${leaves} days</span></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2">
+                            <span class="block text-[9px] text-slate-400 uppercase font-bold">${t('sepStatBreakdown')}</span>
+                            <div class="flex justify-between text-[11px] text-slate-600 border-b border-slate-200 pb-1">
+                                <span>${t('sepGratPayout')}</span>
+                                <span class="font-mono font-bold">LKR ${gratuityVal.toLocaleString([], {maximumFractionDigits:0})}</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-600 border-b border-slate-200 pb-1">
+                                <span>${t('sepUnusedLeave')}</span>
+                                <span class="font-mono font-bold">LKR ${leavesEncashVal.toLocaleString([], {maximumFractionDigits:0})}</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-600">
+                                <span>${t('sepBaseSalary')}</span>
+                                <span class="font-mono font-bold">LKR ${basic.toLocaleString([], {maximumFractionDigits:0})}</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex justify-between items-center text-sm font-bold text-indigo-950 border-t border-dashed border-slate-200">
+                            <div>
+                                <span class="block text-[9px] text-rose-600 uppercase font-black tracking-wider">${t('sepSettleText')}</span>
+                                <span class="text-xl text-rose-600 font-extrabold font-mono">LKR ${finalSettle.toLocaleString([], {maximumFractionDigits:0})}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[9px] text-slate-400 uppercase font-semibold">${t('sepPayStatus')}</span>
+                                <span class="text-xs text-rose-700 font-bold uppercase tracking-wider">${t('sepAwaitingSign')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function executeSeparationWorkflow(e) {
+            e.preventDefault();
+            const empId = document.getElementById('sepEmpSelect').value;
+            const reason = document.getElementById('sepReasonSelect').value;
+
+            if (!empId) {
+                showToast(currentLang === 'en' ? "Please choose an active employee" : "කරුණාකර සක්‍රීය සේවකයෙකු තෝරන්න", "error");
+                return;
+            }
+
+            const emp = state.employees.find(x => x.id === empId);
+            if (emp) {
+                emp.status = "Separated";
+                state.trainingCompetency.gratuityCalc = true;
+                addLog(`COMPLIANCE/SEPARATION PROTOCOL: Flagged employee [${empId}] ${emp.name} as Separated. Reason: [${reason}]. Exit survey notes filed. Gratuity calculated. Payroll terminated.`, "payroll");
+                showToast(currentLang === 'en' ? `Formally separated ${emp.name}` : `${emp.name} සේවයෙන් නිල වශයෙන් ඉවත් කරන ලදී`, "error");
+                renderActiveTab();
+            }
+        }
+    </script>
+
+    <script>
+        const helpManuals = {
+            dash: {
+                title: { en: "Operating the Dashboard", si: "පාලන පුවරුව හැසිරවීම" },
+                steps: {
+                    en: [
+                        "Click 'Sync Biometric Cloud' to simulate synchronizing cloud terminal access cards. Look at the Live Terminal below to watch the fingerprints handshake with the main system.",
+                        "Track live HR liability values such as headcount and monthly gross payroll updates instantly.",
+                        "Examine salary distribution (bar chart) and organizational departments (doughnut chart) mapped dynamically."
+                    ],
+                    si: [
+                        "ජීවමිතික දත්ත (Fingerprints) පද්ධතිය සමඟ සම්බන්ධ කිරීම සඳහා 'ජීවමිතික දත්ත සමමුහුර්ත කරන්න' ක්ලික් කර සජීවී ටර්මිනල් ලොග් සටහන් නිරීක්ෂණය කරන්න.",
+                        "මුළු සේවක හිස් ගණන සහ මාසික දළ වැටුප් වගකීම වැනි දර්ශක වෙනස් වන ආකාරය නිරීක්ෂණය කරන්න.",
+                        "දෙපාර්තමේන්තු සහ වැටුප් ව්‍යාප්ත ප්‍රස්ථාර තත්‍යකාලීනව විශ්ලේෂණය කරන්න."
+                    ]
+                },
+                tip: {
+                    en: "In real corporate setups, physical RFID card sweeps or biometric scanning networks write Directly to the database through Secure REST APIs.",
+                    si: "සැබෑ ආයතනවලදී, සේවක පැමිණීම් වාර්තා වන්නේ දත්ත ගබඩාවලට සෘජුවම සම්බන්ධ කර ඇති සුරක්ෂිත API තාක්ෂණය මඟිනි."
+                }
+            },
+            registry: {
+                title: { en: "Managing Employees & Onboarding", si: "සේවක ලේඛනය සහ සම්බන්ධීකරණය" },
+                steps: {
+                    en: [
+                        "Review current active staff profiles in the database table directory.",
+                        "Register new employees manually or edit basic information in real-time.",
+                        "Check off onboarding checklist blocks to dynamically calculate task completion speed percentages."
+                    ],
+                    si: [
+                        "මධ්‍යම සේවක නාමාවලියෙහි දැනට සක්‍රීය සේවක පැතිකඩ අධ්‍යයනය කරන්න.",
+                        "නව සේවකයෙකු ලියාපදිංචි කිරීම හෝ පවතින සේවකයෙකුගේ තොරතුරු වෙනස් කිරීම සිදු කරන්න.",
+                        "සම්බන්ධීකරණ පියවර ලැයිස්තුවේ ඇති කොටු සලකුණු කර ප්‍රගති ප්‍රතිශතයන් වෙනස් කරන්න."
+                    ]
+                },
+                tip: {
+                    en: "The onboarding tracker links dynamic IT network configurations, banking registration flows, and security pass authorizations inside unified databases.",
+                    si: "සේවක සම්බන්ධීකරණ පියවර සම්පූර්ණ කිරීමේදී තොරතුරු තාක්ෂණ, බැංකු සහ ආරක්ෂක අංශවල දත්ත පද්ධති ස්වයංක්‍රීයව යාවත්කාලීන වේ."
+                }
+            },
+            leave: {
+                title: { en: "Operating Absence and Workflows", si: "නිවාඩු සහ පැමිණීම් වාර්තාකරණය" },
+                steps: {
+                    en: [
+                        "Use manual override clock-in keys to check real biometric scans.",
+                        "Submit standard leave entries for individual accounts with custom reason validations.",
+                        "Resolve pending workflows (Approve/Reject) representing supervisor intervention sequences."
+                    ],
+                    si: [
+                        "සේවකයින්ගේ පැමිණීම් සහ පිටවීම් අතින් වෙනස් කර සජීවීව දත්ත වෙනස් වන ආකාරය බලන්න.",
+                        "නිවාඩු වර්ගය සහ දින ගණන තෝරා නව නිවාඩු අයදුම්පතක් ඉදිරිපත් කරන්න.",
+                        "ඉදිරිපත් කර ඇති නිවාඩු අයදුම්පත් අනුමත හෝ ප්‍රතික්ෂේප කර වැඩ ප්‍රවාහය (Workflow) අවසන් කරන්න."
+                    ]
+                },
+                tip: {
+                    en: "Workflow engines translate management authorizations into structured absence codes, instantly modifying net payslips without paperwork.",
+                    si: "වැඩ ප්‍රවාහ පද්ධති (Workflows) මඟින් කළමනාකරණ අනුමැතිය ලැබුණු වහාම නිවාඩු වාර්තා ස්වයංක්‍රීයව වැටුප් පත්‍රිකාවලට සම්බන්ධ කරයි."
+                }
+            },
+            payroll: {
+                title: { en: "Statutory Compliance Audit", si: "වැටුප් සහ ව්‍යවස්ථාපිත දායකත්වයන්" },
+                steps: {
+                    en: [
+                        "Load dynamic employee payroll parameters to calculate Inland Revenue progressive brackets.",
+                        "Verify progressive tax thresholds (above LKR 100,000 baseline).",
+                        "Observe employer liabilities, specifically the 12% EPF and 3% ETF structures mapped legally."
+                    ],
+                    si: [
+                        "සේවක පැතිකඩක් තෝරා දේශීය ආදායම් බදු ව්‍යුහය යටතේ ලැබෙන ප්‍රතිඵල විශ්ලේෂණය කරන්න.",
+                        "රුපියල් 100,000 ඉක්මවන ආදායම් සඳහා progressive APIT බදු ක්‍රමය ගණනය කරන්න.",
+                        "සේවායෝජකයා විසින් ගෙවිය යුතු EPF (12%) සහ ETF (3%) දායකත්වයන් නිවැරදිව අධ්‍යයනය කරන්න."
+                    ]
+                },
+                tip: {
+                    en: "In Sri Lanka, EPF and ETF structures are strictly mandated. Underpayment or late payment can result in heavy corporate surcharges of up to 50%.",
+                    si: "ශ්‍රී ලංකාවේ EPF සහ ETF දායකත්වයන් ප්‍රමාද කිරීම හෝ පැහැර හැරීම 50% දක්වා අධිභාරවලට යටත් විය හැකි බරපතල වරදකි."
+                }
+            },
+            ats: {
+                title: { en: "Applicant Ingestion (ATS)", si: "නව බඳවා ගැනීම් කළමනාකරණය (ATS)" },
+                steps: {
+                    en: [
+                        "Create new job candidates manually or watch background job engines import candidates dynamically.",
+                        "Move candidate stages through Screening and Interviews toward active Offers.",
+                        "Click 'Hire Candidate' on offered profiles to automatically transfer resume data into the registry."
+                    ],
+                    si: [
+                        "නව අයදුම්කරුවෙකු ලියාපදිංචි කරන්න හෝ ස්වයංක්‍රීයව අයදුම්පත් ලැබෙන ආකාරය නිරීක්ෂණය කරන්න.",
+                        "අයදුම්කරු සම්මුඛ පරීක්ෂණ පියවර ඔස්සේ පත්වීම් ලබාදීම දක්වා පෙරට ගන්න.",
+                        "'සේවයට බඳවා ගන්න' ක්ලික් කර අයදුම්කරුගේ සියලුම තොරතුරු සෘජුවම ප්‍රධාන සේවක ලේඛනයට එක් කරන්න."
+                    ]
+                },
+                tip: {
+                    en: "ATS systems minimize recruitment friction. Seamless handshakes with Core HR registries accelerate onboarding times significantly.",
+                    si: "ATS පද්ධති මඟින් සේවකයින් බඳවා ගැනීමේ කාර්යක්ෂමතාවය ඉහළ නංවන අතර, එම දත්ත ප්‍රධාන සේවක ලේඛනයට එක් කිරීමට ගතවන කාලය අවම කරයි."
+                }
+            },
+            exit: {
+                title: { en: "Gratuity and Exit Calculations", si: "සේවා අවසන් කිරීම් සහ පාරිතෝෂිකය" },
+                steps: {
+                    en: [
+                        "Select any profile showing 5+ service years to evaluate statutory gratuity rates.",
+                        "Examine how unused leave is encashed and calculated based on individual basic salary rates.",
+                        "Simulate involuntary redundancy or retirement protocols to observe final settlements."
+                    ],
+                    si: [
+                        "පාරිතෝෂික දීමනා සඳහා වසර 5කට වැඩි සේවා කාලයක් සහිත සේවකයෙකු තෝරන්න.",
+                        "භාවිත නොකළ නිවාඩු (Unused leaves) සඳහා දීමනා දිනක වැටුප් අනුපාතය මත ගණනය වන ආකාරය බලන්න.",
+                        "සේවයෙන් ඉවත්වීම් හෝ විශ්‍රාම ගැනීම් සටහන් කර අවසාන ගෙවීම් වාර්තාව විශ්ලේෂණය කරන්න."
+                    ]
+                },
+                tip: {
+                    en: "Under the Sri Lankan Payment of Gratuity Act No. 12 of 1983, five completed years of continuous service guarantees a mandatory half-month salary payout for each year of service.",
+                    si: "1983 අංක 12 දරන ශ්‍රී ලංකා පාරිතෝෂික ගෙවීමේ පනතට අනුව, වසර 5ක් සේවය සම්පූර්ණ කළ සේවකයෙකුට සෑම සේවා වසරක් සඳහාම මාස භාගයක වැටුපක් පාරිතෝෂික ලෙස ලැබිය යුතුය."
+                }
+            }
+        };
+
+        function renderHelpPortal(space) {
+            // Calculate training progress percentage
+            const comp = state.trainingCompetency;
+            const totalTasks = Object.keys(comp).length;
+            const completedTasks = Object.values(comp).filter(v => v === true).length;
+            const progressPct = Math.round((completedTasks / totalTasks) * 100);
+
+            // Fetch active manual content
+            const manual = helpManuals[activeHelpSection];
+            const activeTitle = currentLang === 'en' ? manual.title.en : manual.title.si;
+            const activeSteps = currentLang === 'en' ? manual.steps.en : manual.steps.si;
+            const activeTip = currentLang === 'en' ? manual.tip.en : manual.tip.si;
+
+            space.innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h2 class="text-xl font-extrabold text-indigo-950 flex items-center gap-2">
+                            🎓 ${t('helpTitle')}
+                        </h2>
+                        <p class="text-xs text-slate-500">${t('helpDesc')}</p>
+                    </div>
+
+                    <!-- Progress Bar Component -->
+                    <div class="bg-indigo-950 text-white p-5 rounded-2xl shadow-md border border-indigo-900 space-y-3">
+                        <div class="flex justify-between items-center text-xs sm:text-sm font-bold">
+                            <span class="text-amber-400 font-extrabold uppercase tracking-wider">${t('trainingObjective')}</span>
+                            <span>${t('compStatus')}: <span class="text-emerald-400 font-black">${progressPct}%</span></span>
+                        </div>
+                        <div class="w-full bg-indigo-900 h-3.5 rounded-full overflow-hidden shadow-inner flex">
+                            <div class="bg-emerald-400 h-full transition-all duration-500" style="width: ${progressPct}%"></div>
+                        </div>
+
+                        <!-- Objective checklists -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs pt-2">
+                            <label class="flex items-center gap-2 p-2.5 bg-indigo-900/40 rounded-xl border border-indigo-800/60 select-none">
+                                <input type="checkbox" onchange="toggleTrainingTask('dashboardSync')" ${comp.dashboardSync ? 'checked' : ''} class="rounded text-emerald-500 bg-indigo-950 focus:ring-emerald-500">
+                                <span class="${comp.dashboardSync ? 'line-through text-slate-400' : ''}">${t('task1')}</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-indigo-900/40 rounded-xl border border-indigo-800/60 select-none">
+                                <input type="checkbox" onchange="toggleTrainingTask('coreDir')" ${comp.coreDir ? 'checked' : ''} class="rounded text-emerald-500 bg-indigo-950 focus:ring-emerald-500">
+                                <span class="${comp.coreDir ? 'line-through text-slate-400' : ''}">${t('task2')}</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-indigo-900/40 rounded-xl border border-indigo-800/60 select-none">
+                                <input type="checkbox" onchange="toggleTrainingTask('absenceRouting')" ${comp.absenceRouting ? 'checked' : ''} class="rounded text-emerald-500 bg-indigo-950 focus:ring-emerald-500">
+                                <span class="${comp.absenceRouting ? 'line-through text-slate-400' : ''}">${t('task3')}</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-indigo-900/40 rounded-xl border border-indigo-800/60 select-none">
+                                <input type="checkbox" onchange="toggleTrainingTask('epfSettle')" ${comp.epfSettle ? 'checked' : ''} class="rounded text-emerald-500 bg-indigo-950 focus:ring-emerald-500">
+                                <span class="${comp.epfSettle ? 'line-through text-slate-400' : ''}">${t('task4')}</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-indigo-900/40 rounded-xl border border-indigo-800/60 select-none">
+                                <input type="checkbox" onchange="toggleTrainingTask('atsHire')" ${comp.atsHire ? 'checked' : ''} class="rounded text-emerald-500 bg-indigo-950 focus:ring-emerald-500">
+                                <span class="${comp.atsHire ? 'line-through text-slate-400' : ''}">${t('task5')}</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-indigo-900/40 rounded-xl border border-indigo-800/60 select-none">
+                                <input type="checkbox" onchange="toggleTrainingTask('gratuityCalc')" ${comp.gratuityCalc ? 'checked' : ''} class="rounded text-emerald-500 bg-indigo-950 focus:ring-emerald-500">
+                                <span class="${comp.gratuityCalc ? 'line-through text-slate-400' : ''}">${t('task6')}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Tabs system to explore different modules manuals -->
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider">${t('helpTabsTitle')}</h3>
+                        
+                        <div class="flex flex-wrap gap-1.5 border-b border-slate-200 pb-2">
+                            <button onclick="switchHelpSection('dash')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeHelpSection === 'dash' ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}">
+                                ${t('helpTabDash')}
+                            </button>
+                            <button onclick="switchHelpSection('registry')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeHelpSection === 'registry' ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}">
+                                ${t('helpTabRegistry')}
+                            </button>
+                            <button onclick="switchHelpSection('leave')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeHelpSection === 'leave' ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}">
+                                ${t('helpTabLeave')}
+                            </button>
+                            <button onclick="switchHelpSection('payroll')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeHelpSection === 'payroll' ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}">
+                                ${t('helpTabPayroll')}
+                            </button>
+                            <button onclick="switchHelpSection('ats')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeHelpSection === 'ats' ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}">
+                                ${t('helpTabATS')}
+                            </button>
+                            <button onclick="switchHelpSection('exit')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeHelpSection === 'exit' ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}">
+                                ${t('helpTabExit')}
+                            </button>
+                        </div>
+
+                        <!-- Main manual contents -->
+                        <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-4">
+                            <h4 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
+                                📖 ${activeTitle}
+                            </h4>
+                            <ul class="space-y-2.5 text-xs text-slate-600 pl-4 list-decimal leading-relaxed">
+                                ${activeSteps.map(step => `<li>${step}</li>`).join('')}
+                            </ul>
+
+                            <div class="border-t border-slate-200/60 pt-4 bg-amber-50/60 border border-amber-100 p-4 rounded-xl space-y-1">
+                                <span class="text-[10px] bg-amber-200 text-amber-800 font-extrabold uppercase px-2 py-0.5 rounded-full tracking-wider inline-block">
+                                    💡 ${t('helpTip')}
+                                </span>
+                                <p class="text-xs text-slate-700 leading-relaxed font-semibold">
+                                    ${activeTip}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleTrainingTask(taskName) {
+            state.trainingCompetency[taskName] = !state.trainingCompetency[taskName];
+            addLog(`TRAINING CONTROLLER: Updated manual step checkbox [${taskName}] to ${state.trainingCompetency[taskName]}.`, "system");
+            showToast(currentLang === 'en' ? "Objective status updated" : "පුහුණු අරමුණු ප්‍රගතිය යාවත්කාලීන විය");
+            renderActiveTab();
+        }
+
+        function switchHelpSection(sectionKey) {
+            activeHelpSection = sectionKey;
+            renderActiveTab();
+        }
+    </script>
+
+    <script>
+        const eduExplanations = {
+            dashboard: {
+                title: "Executive HR Analytics",
+                desc: "Enterprise HRIS systems run continuous batch algorithms over internal databases to aggregate salary records and structural metrics. These aggregates provide insights to executive stakeholders via dashboard graphs, bypassing manual spreadsheet calculations.",
+                siTitle: "විධායක මානව සම්පත් විශ්ලේෂණය",
+                siDesc: "මානව සම්පත් තොරතුරු පද්ධති (HRIS) මඟින් සේවක වැටුප් සහ දෙපාර්තමේන්තු දත්ත අඛණ්ඩව විශ්ලේෂණය කර ප්‍රධාන පාලන පුවරුව වෙත ලබාදේ. එමඟින් ආයතන කළමනාකාරීත්වයට නිවැරදි තීරණ කඩිනමින් ගැනීමට සහාය වේ."
+            },
+            employees: {
+                title: "Database System of Record (SoR) & Onboarding",
+                desc: "The Core HR Directory acts as a relational schema linking personnel records to onboarding checklists. When new recruits complete mandatory checklists, their data credentials sync automatically across other active operational sub-networks.",
+                siTitle: "මධ්‍යම දත්ත පද්ධතිය සහ සේවක සම්බන්ධීකරණය",
+                siDesc: "ප්‍රධාන සේවක නාමාවලිය ආයතනයේ සියලුම සේවකයින්ගේ තොරතුරු ගබඩා කර තබන මධ්‍යස්ථානයයි. නව සේවකයෙකු සම්බන්ධීකරණ පියවර (Onboarding) අවසන් කළ සැනින් එම දත්ත පද්ධති පුරා ස්වයංක්‍රීයව යාවත්කාලීන වේ."
+            },
+            leave: {
+                title: "Workflow Automation Triggers",
+                desc: "Leave requests demonstrate the power of HRIS workflow pipelines. When an applicant submits a request, standard database systems issue notification signals to managers. Once resolved, the system automatically adjusts core availability profiles without manual paperwork.",
+                siTitle: "ස්වයංක්‍රීය වැඩ ප්‍රවාහ සහ අනුමැතීන්",
+                siDesc: "සේවක නිවාඩු අයදුම් කිරීම් ස්වයංක්‍රීය වැඩ ප්‍රවාහ (Workflows) සඳහා කදිම උදාහරණයකි. අයදුම්පතක් යොමුකළ වහාම කළමනාකරු වෙත පද්ධති සංඥා නිකුත් කෙරෙන අතර, අනුමත කළ වහාම පැමිණීම් වාර්තා ස්වයංක්‍රීයව වෙනස් වේ."
+            },
+            payroll: {
+                title: "Statutory & Compliance Calculations",
+                desc: "Sri Lankan labor legislation mandates standardized EPF/ETF and progressive APIT/PAYE calculations. HRIS software automates these formulas, processing the 8% employee, 12% employer, and 3% ETF allocations while calculating tax brackets programmatically.",
+                siTitle: "ව්‍යවස්ථාපිත සහ නීතිමය අනුකූලතාවය",
+                siDesc: "ශ්‍රී ලංකාවේ කම්කරු නීතියට අනුව EPF (සේවක 8%, සේවායෝජක 12%) සහ ETF (3%) දායකත්වයන් නිවැරදිව ගණනය කළ යුතුය. මෙම මෙවලම මඟින් එම දත්ත සහ ප්‍රගතිශීලී APIT ආදායම් බදු ස්වයංක්‍රීයව ගණනය කර දේ."
+            },
+            recruitment: {
+                title: "Applicant Tracking Systems (ATS)",
+                desc: "An ATS optimizes the recruitment pipeline using Kanban frameworks. It lets talent teams screen, interview, and offer jobs to prospective candidates smoothly, immediately mapping successful candidate data over to employee directory schemas.",
+                siTitle: "අයදුම්කරුවන් ලුහුබැඳීමේ පද්ධතිය (ATS)",
+                siDesc: "ATS පද්ධතියක් මඟින් බඳවා ගැනීමේ ක්‍රියාවලිය ක්‍රමවත් කරයි. අයදුම්පත් පරීක්ෂා කිරීමේ සිට සම්මුඛ පරීක්ෂණ සහ පත්වීම් ලිපි නිකුත් කිරීම දක්වා සියලුම පියවර මෙහිදී සරලව සිදුකළ හැක."
+            },
+            separation: {
+                title: "Offboarding Protocols & Statutory Gratuity",
+                desc: "Separation acts as the final stage of the employee lifecycle. To remain compliant, the system logs exit survey notes, ceases future automated payroll runs, and estimates legal payouts under the Sri Lankan Payment of Gratuity Act of 1983.",
+                siTitle: "සේවා අවසන් කිරීම සහ ව්‍යවස්ථාපිත පාරිතෝෂික",
+                siDesc: "සේවකයෙකු ආයතනයෙන් ඉවත්වීම අවසාන පියවරයි. 1983 අංක 12 දරන පාරිතෝෂික ගෙවීමේ පනත අනුව, වසර 5කට වඩා සේවය කළ සේවකයින්ට පාරිතෝෂික දීමනා සහ ඉතිරි නිවාඩු සඳහා ගෙවීම් මෙමඟින් ගණනය කෙරේ."
+            },
+            help: {
+                title: "SaaS Operations Self-Guided Training",
+                desc: "Enterprise compliance training allows team members to master structural systems with zero development environments. Check off objectives directly as you finish them across modules to achieve full master directory qualifications.",
+                siTitle: "ආයතනික පද්ධති ස්වයංක්‍රීය පුහුණුව",
+                siDesc: "මානව සම්පත් පරිපාලන පද්ධතිය පිළිබඳව ප්‍රායෝගික පුහුණුවක් ලැබීම මෙහෙයුම් කටයුතුවල නිරත වීමේදී අතිශය ප්‍රයෝජනවත් වේ. ඉහත ඇති පුහුණු ඉලක්ක සම්පූර්ණ කිරීමෙන් මෙහෙයුම් දැනුම තහවුරු කර ගත හැක."
+            }
+        };
+
+        const quizData = [
+            {
+                question: "Which EPF contribution percentages are legally deducted from an employee's salary and contributed by an employer in Sri Lanka?",
+                options: [
+                    { key: "A", text: "8% from Employee, 12% from Employer" },
+                    { key: "B", text: "10% from Employee, 15% from Employer" },
+                    { key: "C", text: "5% from Employee, 12% from Employer" }
+                ],
+                correct: "A",
+                siQuestion: "ශ්‍රී ලංකාවේ පවතින නීතියට අනුව සේවක වැටුපෙන් අඩු කරන සහ සේවායෝජකයා දායක වන ව්‍යවස්ථාපිත EPF ප්‍රතිශත මොනවාද?",
+                siOptions: [
+                    { key: "A", text: "සේවකයාගෙන් 8%, සේවායෝජකයාගෙන් 12%" },
+                    { key: "B", text: "සේවකයාගෙන් 10%, සේවායෝජකයාගෙන් 15%" },
+                    { key: "C", text: "සේවකයාගෙන් 5%, සේවායෝජකයාගෙන් 12%" }
+                ]
+            },
+            {
+                question: "What occurs to an employee's profile in the database upon executing a formal Separation?",
+                options: [
+                    { key: "A", text: "The historical record is completely destroyed instantly" },
+                    { key: "B", text: "The record is flagged Separated, future automated payroll stops, and final statutory settlement estimates are processed" },
+                    { key: "C", text: "The employee's historical data logs are reset to default parameters" }
+                ],
+                correct: "B",
+                siQuestion: "සේවකයෙකු පද්ධතිය තුළ සේවා අවසන් කිරීමකට (Separation) ලක්කළ විට සිදුවන්නේ කුමක්ද?",
+                siOptions: [
+                    { key: "A", text: "සේවකයාගේ සියලුම අතීත වාර්තා ක්ෂණිකව විනාශ වේ" },
+                    { key: "B", text: "සේවකයා 'ඉවත්වූ' ලෙස සටහන් වී වැටුප් පත්‍රිකා නැවත සැකසීම නතර වන අතර, අවසාන පාරිතෝෂික ගෙවීම් ගණනය කෙරේ" },
+                    { key: "C", text: "සේවකයාගේ සියලුම දත්ත පද්ධතියේ මුල් තත්ත්වයට පත් වේ" }
+                ]
+            },
+            {
+                question: "Under the Sri Lankan Payment of Gratuity Act No. 12 of 1983, what is the minimum duration of completed service required for an employee to qualify for gratuity?",
+                options: [
+                    { key: "A", text: "1 Year of completed service" },
+                    { key: "B", text: "5 Years of completed service" },
+                    { key: "C", text: "10 Years of completed service" }
+                ],
+                correct: "B",
+                siQuestion: "1983 අංක 12 දරන ශ්‍රී ලංකා පාරිතෝෂික ගෙවීමේ පනත යටතේ පාරිතෝෂික ලබාගැනීම සඳහා තිබිය යුතු අවම සේවා කාලය කොපමණද?",
+                siOptions: [
+                    { key: "A", text: "සම්පූර්ණ කළ සේවා කාලය වසර 1" },
+                    { key: "B", text: "සම්පූර්ණ කළ සේවා කාලය වසර 5" },
+                    { key: "C", text: "සම්පූර්ණ කළ සේවා කාලය වසර 10" }
+                ]
+            }
+        ];
+
+        let activeQuizIndex = 0;
+
+        function renderEducationalConsole() {
+            const explainer = document.getElementById('eduTopicExplainer');
+            const data = eduExplanations[activeTab] || eduExplanations['dashboard'];
+
+            const title = currentLang === 'en' ? data.title : data.siTitle;
+            const desc = currentLang === 'en' ? data.desc : data.siDesc;
+
+            if (explainer) {
+                explainer.innerHTML = `
+                    <h4 class="font-extrabold text-sm text-emerald-400 flex items-center gap-1.5">
+                        💡 ${title}
+                    </h4>
+                    <p class="text-xs text-indigo-100 leading-relaxed">${desc}</p>
+                `;
+            }
+
+            renderQuiz();
+        }
+
+        function renderQuiz() {
+            const quiz = quizData[activeQuizIndex];
+            const displayQuestion = currentLang === 'en' ? quiz.question : quiz.siQuestion;
+            const displayOptions = currentLang === 'en' ? quiz.options : quiz.siOptions;
+
+            const qElement = document.getElementById('quizQuestion');
+            if (qElement) {
+                qElement.textContent = displayQuestion;
+            }
+            
+            const answersContainer = document.getElementById('quizAnswersContainer');
+            if (answersContainer) {
+                answersContainer.innerHTML = displayOptions.map(opt => `
+                    <button onclick="checkQuizAnswer('${opt.key}')" class="w-full text-left p-2.5 rounded bg-indigo-950 hover:bg-indigo-900 transition duration-150 border border-indigo-800 text-[11px] block text-indigo-200 pointer-events-auto">
+                        <span class="font-bold text-emerald-400 mr-1">${opt.key})</span> ${opt.text}
+                    </button>
+                `).join('');
+            }
+
+            const feedback = document.getElementById('quizFeedback');
+            if (feedback) {
+                feedback.className = "hidden font-semibold mt-3 p-2.5 rounded text-xs transition duration-150";
+            }
+        }
+
+        function checkQuizAnswer(answer) {
+            const quiz = quizData[activeQuizIndex];
+            const feedback = document.getElementById('quizFeedback');
+            
+            if (feedback) {
+                feedback.classList.remove('hidden');
+                if (answer === quiz.correct) {
+                    feedback.className = "mt-3 p-2.5 rounded text-xs bg-emerald-950 border border-emerald-800 text-emerald-300 font-bold cursor-pointer";
+                    feedback.textContent = currentLang === 'en' ? "Verification Passed: Standard compliance matched! (Click to load next question)" : "පිළිතුර නිවැරදියි! ඊළඟ ප්‍රශ්නය ලබාගැනීමට මෙතැන ක්ලික් කරන්න.";
+                    feedback.onclick = loadNextQuiz;
+                    addLog("QUIZ CONTROLLER: User successfully passed educational assessment prompt.", "system");
+                } else {
+                    feedback.className = "mt-3 p-2.5 rounded text-xs bg-rose-950 border border-rose-800 text-rose-300 font-bold";
+                    feedback.textContent = currentLang === 'en' ? "Audit Failed: Statutory framework mismatched. Try again." : "පිළිතුර වැරදියි. කරුණාකර නැවත උත්සාහ කරන්න.";
+                    feedback.onclick = null;
+                }
+            }
+        }
+
+        function loadNextQuiz() {
+            activeQuizIndex = (activeQuizIndex + 1) % quizData.length;
+            renderQuiz();
+            showToast(currentLang === 'en' ? "Next compliance audit question loaded" : "ඊළඟ ප්‍රශ්නය සූදානම්");
+        }
+    </script>
+
+    <script>
+        const externalFirstNames = ["Pradeep", "Nirosha", "Malith", "Ishara", "Nuwan", "Chathura", "Gayatri", "Sajith", "Minoli", "Ruwan"];
+        const externalLastNames = ["Silva", "Fernando", "Wijewardene", "Senanayake", "Perera", "Jayasinghe", "Bandara", "Gunasekara", "Alwis"];
+        const typicalLeaveReasons = ["Sudden Personal Matter", "Severe Dengue Checkup", "General Dental Procedure", "Family Wedding Block", "Inland Revenue Appointment"];
+
+        function runLiveEnterpriseEngine() {
+            if (!state.isLiveActive) return;
+
+            const eventTrigger = Math.floor(Math.random() * 3) + 1;
+
+            if (eventTrigger === 1) {
+                // Biometric Fingerprint Entry Activity
+                const activeStaff = state.employees.filter(e => e.status !== 'Separated');
+                if (activeStaff.length > 0) {
+                    const luckyEmployee = activeStaff[Math.floor(Math.random() * activeStaff.length)];
+                    const currentlyInIndex = state.attendance.findIndex(a => a.empId === luckyEmployee.id);
+                    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const terminalId = `BFT-0${Math.floor(Math.random() * 4) + 1}`;
+
+                    if (currentlyInIndex > -1) {
+                        state.attendance.splice(currentlyInIndex, 1);
+                        addLog(`BIOMETRIC FEED [Terminal ${terminalId}]: Swiped Touch-Out for [${luckyEmployee.id}] ${luckyEmployee.name}. Sync succeeded.`, "system");
+                        showToast(currentLang === 'en' ? `Biometric Log: ${luckyEmployee.name} checked out` : `ජීවමිතික සටහන: ${luckyEmployee.name} කාර්යාලයෙන් පිටවිය.`, "info");
+                    } else {
+                        state.attendance.push({
+                            empId: luckyEmployee.id,
+                            name: luckyEmployee.name,
+                            time: timestamp,
+                            status: "In",
+                            method: `Fingerprint Terminal ${terminalId}`
+                        });
+                        addLog(`BIOMETRIC FEED [Terminal ${terminalId}]: Swiped Touch-In for [${luckyEmployee.id}] ${luckyEmployee.name}. Handshake complete.`, "system");
+                        showToast(currentLang === 'en' ? `Biometric Log: ${luckyEmployee.name} checked in` : `ජීවමිතික සටහන: ${luckyEmployee.name} කාර්යාලයට පැමිණියේය.`);
+                    }
+                    if (activeTab === 'leave') renderLeave(document.getElementById('moduleWindow'));
+                }
+            } 
+            else if (eventTrigger === 2) {
+                // Automated Leave Workflow Ingestion
+                const pendingLeaves = state.leaves.filter(l => l.status === "Pending");
+                if (pendingLeaves.length > 0 && Math.random() > 0.5) {
+                    const targetLeave = pendingLeaves[0];
+                    targetLeave.status = "Approved";
+                    const empObj = state.employees.find(e => e.id === targetLeave.empId);
+                    if (empObj) {
+                        empObj.status = "On Leave";
+                        empObj.remainingLeaves = Math.max(0, empObj.remainingLeaves - 2);
+                    }
+
+                    addLog(`ABSENCE WORKFLOW ENGINE: Automatically verified absence details for ${targetLeave.empName}. Workflow Approved.`, "system");
+                    showToast(currentLang === 'en' ? `Workflow: Approved leave for ${targetLeave.empName}` : `වැඩ ප්‍රවාහය: ${targetLeave.empName}ගේ නිවාඩු අනුමත විය.`);
+                    if (activeTab === 'leave') renderLeave(document.getElementById('moduleWindow'));
+                } else {
+                    const activeStaff = state.employees.filter(e => e.status === "Active");
+                    if (activeStaff.length > 0) {
+                        const leaveEmp = activeStaff[Math.floor(Math.random() * activeStaff.length)];
+                        const daysNum = Math.floor(Math.random() * 3) + 1;
+                        const classType = ["Annual", "Casual", "Medical"][Math.floor(Math.random() * 3)];
+                        const reasonText = typicalLeaveReasons[Math.floor(Math.random() * typicalLeaveReasons.length)];
+                        
+                        const newLeave = {
+                            id: `LV-${100 + state.leaves.length + 1}`,
+                            empId: leaveEmp.id,
+                            empName: leaveEmp.name,
+                            type: classType,
+                            start: new Date().toISOString().split('T')[0],
+                            end: `+${daysNum} days`,
+                            reason: reasonText,
+                            status: "Pending"
+                        };
+                        state.leaves.push(newLeave);
+                        addLog(`ABSENCE WORKFLOW ENGINE: Automatically logged online leave request block [${newLeave.id}] from ${leaveEmp.name}.`, "system");
+                        showToast(currentLang === 'en' ? `${leaveEmp.name} filed casual leave request` : `${leaveEmp.name} නිවාඩු ඉල්ලීමක් යොමුකර ඇත.`);
+                        if (activeTab === 'leave') renderLeave(document.getElementById('moduleWindow'));
+                    }
+                }
+            } 
+            else {
+                // Recruitment Applicant Tracking Ingestion
+                const generatedFirstName = externalFirstNames[Math.floor(Math.random() * externalFirstNames.length)];
+                const generatedLastName = externalLastNames[Math.floor(Math.random() * externalLastNames.length)];
+                const fullName = `${generatedFirstName} ${generatedLastName}`;
+                const chosenJob = state.jobs[Math.floor(Math.random() * state.jobs.length)];
+                
+                const newCandidate = {
+                    id: `CAN-00${state.candidates.length + 1}`,
+                    name: fullName,
+                    role: chosenJob.title,
+                    stage: "Screening",
+                    email: `${generatedFirstName.toLowerCase()}.${generatedLastName.toLowerCase()}@obisl.com`
+                };
+                state.candidates.push(newCandidate);
+                addLog(`ATS INGESTION: Synced API connection. Imported resume files for candidate ${fullName}.`, "system");
+                showToast(currentLang === 'en' ? `ATS: New application from ${fullName}` : `ATS: ${fullName}ගෙන් නව අයදුම්පතක් ලැබුණි.`);
+                if (activeTab === 'recruitment') renderRecruitment(document.getElementById('moduleWindow'));
+            }
+
+            updateDashboardStats();
+            if (activeTab === 'dashboard') {
+                initDashboardCharts();
+            }
+        }
+    </script>
+
+    <script>
+        function renderTerminal() {
+            const term = document.getElementById('simTerminal');
+            if (term) {
+                term.innerHTML = state.logs.map(l => {
+                    let color = "text-slate-400";
+                    if (l.type === "payroll") color = "text-emerald-400";
+                    else if (l.type === "system") color = "text-cyan-400";
+                    return `
+                        <div class="leading-relaxed">
+                            <span class="text-slate-600">[${l.time}]</span>
+                            <span class="${color}">${l.text}</span>
+                        </div>
+                    `;
+                }).join('');
+                term.scrollTop = 0;
+            }
+        }
+
+        window.onload = function() {
+            updateStaticLabels();
+            renderNavigation();
+            renderActiveTab();
+            renderEducationalConsole();
+            renderTerminal();
+
+            // Run Live Clock updates
+            setInterval(() => {
+                const now = new Date();
+                const clock = document.getElementById('liveClock');
+                if (clock) {
+                    clock.textContent = now.toLocaleDateString() + ' | ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                }
+            }, 1000);
+
+            // Execute the Background Enterprise Update Engine heartbeat loop
+            setInterval(runLiveEnterpriseEngine, 6000);
+            
+            showToast("OBISL Enterprise HRIS Suite online.", "info");
+        };
+    </script>
+</body>
+</html>
